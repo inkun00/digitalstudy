@@ -1311,9 +1311,9 @@ body {
 .opening-lead { margin-top: 12px; color: #655f57; font-size: 14px; line-height: 1.65; word-break: keep-all; }
 .opening-scene { position: relative; width: 100%; height: 176px; flex: none; margin-top: 17px; overflow: hidden; border: 1px solid #eee6d1; border-radius: 17px; background: #fff7df; box-shadow: 0 5px 17px #786a451c; }
 .opening-scene img { object-fit: cover; }
-.opening-scene--0 { height: 215px; }
-.opening-scene--5 { height: 215px; }
-.opening-scene--5 img { object-fit: contain; }
+.opening-scene--intro { height: 215px; }
+.opening-scene--friends { height: 215px; }
+.opening-scene--friends img { object-fit: contain; }
 .opening-notification { display: flex; align-items: center; gap: 12px; padding: 14px; margin-top: 5px; border: 1px solid #eee6d1; border-radius: 17px; background: #fff; box-shadow: 0 7px 20px #786a4520; }
 .opening-notification-icon { display: grid; place-items: center; width: 38px; height: 38px; flex: none; border-radius: 12px; background: #fee500; font-size: 18px; }
 .opening-notification div { min-width: 0; flex: 1; }
