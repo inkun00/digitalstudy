@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { createPortal } from "react-dom";
 import { FANTASY_ITEMS } from "@/lib/fantasyItems";
 
@@ -86,7 +87,9 @@ export default function ChatList({ messages, isTyping, currentScenario, onDownlo
             <div className="song-gift-card-details">
               {msg.songGift.letter && <p><strong>편지</strong>{msg.songGift.letter}</p>}
               {msg.songGift.lyrics && <details><summary>가사 보기</summary><p>{msg.songGift.lyrics}</p></details>}
+              {msg.songGift.suitable === false && <p className="song-gift-unanswered">친구의 답장은 오지 않았어요. 위로와 사이버폭력 예방·대처를 담은 가사로 다시 선물해 보세요.</p>}
               <button type="button" onClick={() => onDownloadSongPdf(msg.songGift.fileId)}>📄 악보 PDF 내려받기</button>
+              {msg.songGift.suitable === true && <Link className="song-gift-ending-link" href={`/ending?scenario=${encodeURIComponent(currentScenario.id)}`}>마음 회복 이야기 다시 보기 →</Link>}
             </div>
             <div className="gift-message-footer"><strong>노래 선물 완료</strong><time>{msg.time}</time></div>
           </article>;

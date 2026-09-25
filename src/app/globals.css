@@ -395,6 +395,38 @@ body {
 .song-gift-body .song-gift-error { padding: 8px 10px; border-radius: 6px; background: #fff1f1; color: #b53636; }
 .song-gift-submit { padding: 11px; border: 0; border-radius: 8px; background: #fee500; color: #302610; font: inherit; font-size: 13px; font-weight: 800; cursor: pointer; }
 .song-gift-submit:disabled { background: #ececec; color: #888; cursor: default; }
+.song-gift-unanswered { padding: 9px; border-radius: 8px; background: #f5f6f8; color: #666; }
+.song-gift-ending-link { display: block; margin-top: 8px; padding: 8px; border-radius: 7px; background: #fee500; color: #3a2e0b; text-align: center; text-decoration: none; font-weight: 800; }
+.song-format-popup { max-width: 340px; align-items: center; gap: 12px; padding: 26px 22px 20px; text-align: center; }
+.song-format-popup-icon { display: grid; width: 56px; height: 56px; place-items: center; border-radius: 17px; background: #fff7d4; font-size: 29px; }
+.song-format-popup h3 { font-size: 17px; }
+.song-format-popup p { color: #5f6269; font-size: 13px; line-height: 1.55; }
+.song-format-popup button { width: 100%; margin-top: 4px; padding: 11px; border: 0; border-radius: 9px; background: #fee500; color: #302609; font: inherit; font-weight: 800; cursor: pointer; }
+
+.ending-loading { display: grid; min-height: 100vh; place-items: center; padding: 24px; color: #5f6269; }
+.ending-page { width: 100%; max-width: 480px; min-height: 100vh; background: linear-gradient(180deg,#fff8cb 0%,#fffdf1 38%,#fff 100%); box-shadow: 0 12px 40px rgba(0,0,0,.15); }
+.ending-topbar { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; height: 56px; padding: 0 18px; background: #fee500; color: #29200f; font-size: 14px; font-weight: 800; }
+.ending-topbar a { color: inherit; text-decoration: none; font-size: 24px; font-weight: 500; }
+.ending-topbar span:last-child { font-size: 22px; color: #3a1d1d; }
+.ending-content { padding: 22px 20px 36px; }
+.ending-eyebrow { margin-bottom: 13px; color: #796921; font-size: 10px; font-weight: 900; letter-spacing: .18em; }
+.ending-hero { overflow: hidden; border-radius: 20px; aspect-ratio: 3 / 2; background: #f1eacb; box-shadow: 0 8px 22px rgba(92,71,28,.14); }
+.ending-hero img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.ending-story { padding: 24px 3px 8px; }
+.ending-victim { display: inline-block; margin-bottom: 7px; color: #18868a; font-size: 12px; font-weight: 900; }
+.ending-story h1 { color: #2d281e; font-size: clamp(23px,6vw,29px); line-height: 1.3; letter-spacing: -.05em; }
+.ending-story > p { margin-top: 14px; color: #4c4c4c; font-size: 14px; line-height: 1.75; word-break: keep-all; }
+.ending-story blockquote { margin-top: 18px; padding: 14px 16px; border-left: 4px solid #fee500; border-radius: 0 11px 11px 0; background: #fff9de; color: #594b21; font-size: 13px; line-height: 1.6; font-weight: 700; }
+.ending-letter { display: flex; gap: 12px; margin-top: 14px; padding: 16px; border: 1px solid #dbeee9; border-radius: 13px; background: #f2fbf8; }
+.ending-letter span { font-size: 19px; }
+.ending-letter p { color: #365d55; font-size: 12px; line-height: 1.65; word-break: keep-all; }
+.ending-song { display: flex; flex-direction: column; gap: 5px; margin-top: 13px; padding: 13px 15px; border-radius: 11px; background: #fff; box-shadow: 0 1px 5px rgba(0,0,0,.08); }
+.ending-song span { color: #7c6b27; font-size: 11px; font-weight: 700; }
+.ending-song strong { color: #2c2922; font-size: 14px; }
+.ending-actions { display: flex; flex-direction: column; gap: 9px; margin-top: 24px; }
+.ending-actions a { display: grid; min-height: 45px; place-items: center; border-radius: 10px; text-decoration: none; font-size: 13px; font-weight: 900; }
+.ending-primary { background: #fee500; color: #342a0d; }
+.ending-secondary { border: 1px solid #e4e4e4; background: #fff; color: #535353; }
 
 /* =========================================================
    1. 카카오톡 상단 헤더

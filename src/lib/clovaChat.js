@@ -20,7 +20,7 @@ export function buildClovaMessages({ scenario, messages, counselor, evaluation }
   const latestGift = latestGiftMessage ? giftItemsById.get(latestGiftMessage.giftItemId) : null;
   const recentDialogue = messages
     .filter((message) => ((message.sender === "user" || message.sender === "victim") && message.text.trim()) ||
-      (message.sender === "system" && (giftItemsById.has(message.giftItemId) || message.songGift?.title)))
+      (message.sender === "system" && (giftItemsById.has(message.giftItemId) || (message.songGift?.suitable === true && message.songGift.title))))
     .slice(-24)
     .map((message) => {
       if (message.sender === "system") {

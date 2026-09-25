@@ -3,7 +3,7 @@ import { SCENARIOS } from "@/lib/scenarios";
 import { normalizeUserProfile } from "@/lib/userProfile";
 import { ClovaChatError } from "@/lib/clovaChat";
 import { generateSongGiftReply } from "@/lib/songGift";
-import { canReceiveSongGift, MAX_SONG_PAGE_BASE64_LENGTH, MAX_SONG_PAGES, SONG_GIFT_REFUSAL } from "@/lib/songGiftConfig";
+import { canReceiveSongGift, MAX_SONG_PAGE_BASE64_LENGTH, MAX_SONG_PAGES, SONG_GIFT_REFUSAL, SongFormatError } from "@/lib/songGiftConfig";
 
 export const runtime = "nodejs";
 
@@ -26,7 +26,7 @@ export async function POST(req) {
     const song = await generateSongGiftReply({ scenario, messages, counselor, pages, apiKey: process.env.CLOVA_STUDIO_API_KEY });
     return NextResponse.json(song);
   } catch (error) {
-    if (error instanceof ClovaChatError) return NextResponse.json({ error: error.message }, { status: error.status });
+    if (error instanceof ClovaChatError || error instanceof SongFormatError) return NextResponse.json({ error: error.message, ...(error.code ? { code: error.code } : {}) }, { status: error.status });
     console.error("[API /song-gift Error]:", error);
     return NextResponse.json({ error: "노래 선물을 처리하지 못했어요. 다시 시도해 주세요." }, { status: 500 });
   }

@@ -17,7 +17,7 @@ import { SHOP_ITEMS, applyFantasyItem, awardHeartPoints, pointsForScoreIncrease,
 import { CLOUD_SESSION_EVENT, chatDirtyKey, chatStorageKey } from "@/lib/cloudState";
 import { renderSongPdf } from "@/lib/songPdf";
 import { downloadSongPdf, saveSongPdf } from "@/lib/songPdfStore";
-import { canReceiveSongGift, SONG_GIFT_REFUSAL } from "@/lib/songGiftConfig";
+import { canReceiveSongGift, SONG_FORMAT_ERROR, SONG_GIFT_REFUSAL } from "@/lib/songGiftConfig";
 import { useCloudSession } from "@/components/CloudSyncProvider";
 
 const subscribeToMount = () => () => {};
@@ -86,9 +86,13 @@ export default function ChatPageClient({ initialScenarioId }) {
   const [isSongGiftModalOpen, setIsSongGiftModalOpen] = useState(false);
   const [isSendingSong, setIsSendingSong] = useState(false);
   const [songGiftError, setSongGiftError] = useState("");
+  const [isSongFormatPopupOpen, setIsSongFormatPopupOpen] = useState(false);
   const [inputValue, setInputValue] = useState(() => typeof savedSession?.inputValue === "string" ? savedSession.inputValue.slice(0, 2000) : "");
   const generation = useRef(0);
   const replyInFlight = useRef(false);
+  const endingTimer = useRef(null);
+
+  useEffect(() => () => clearTimeout(endingTimer.current), []);
 
   useEffect(() => {
     if (!isClient) return;
@@ -229,6 +233,7 @@ export default function ChatPageClient({ initialScenarioId }) {
       return;
     }
     setSongGiftError("");
+    setIsSongFormatPopupOpen(false);
     setIsSongGiftModalOpen(true);
   };
 
@@ -256,7 +261,9 @@ export default function ChatPageClient({ initialScenarioId }) {
       });
       if (!response.ok) {
         const failure = await response.json().catch(() => null);
-        throw new Error(failure?.error || "악보의 편지와 가사를 읽지 못했어요.");
+        const error = new Error(failure?.error || "악보의 편지와 가사를 읽지 못했어요.");
+        error.code = failure?.code;
+        throw error;
       }
       const song = await response.json();
       if (requestGeneration !== generation.current) return;
@@ -267,14 +274,24 @@ export default function ChatPageClient({ initialScenarioId }) {
         id: `song-gift-${crypto.randomUUID()}`,
         sender: "system",
         text: `${currentScenario.name}에게 직접 만든 노래 '${song.title}'의 악보 PDF를 선물했어요.`,
-        songGift: { title: song.title, letter: song.letter, lyrics: song.lyrics, fileName: file.name, fileId },
+        songGift: { title: song.title, letter: song.letter, lyrics: song.lyrics, fileName: file.name, fileId, suitable: song.suitable === true },
         time: currentTime(),
       };
-      const victimMessage = { id: `victim-${crypto.randomUUID()}`, sender: "victim", text: song.reply, time: currentTime(), unread: false };
-      setMessages((current) => [...current, giftMessage, victimMessage].slice(-80));
+      const victimMessage = song.suitable && song.reply
+        ? { id: `victim-${crypto.randomUUID()}`, sender: "victim", text: song.reply, time: currentTime(), unread: false }
+        : null;
+      setMessages((current) => [...current, giftMessage, ...(victimMessage ? [victimMessage] : [])].slice(-80));
       setIsSongGiftModalOpen(false);
+      if (victimMessage) {
+        endingTimer.current = setTimeout(() => router.push(`/ending?scenario=${encodeURIComponent(scenarioId)}`), 4000);
+      }
     } catch (error) {
-      if (requestGeneration === generation.current) setSongGiftError(error.message);
+      if (requestGeneration === generation.current) {
+        if (error.code === "INVALID_SONG_FORMAT") {
+          setIsSongGiftModalOpen(false);
+          setIsSongFormatPopupOpen(true);
+        } else setSongGiftError(error.message);
+      }
     } finally {
       replyInFlight.current = false;
       if (requestGeneration === generation.current) {
@@ -308,6 +325,7 @@ export default function ChatPageClient({ initialScenarioId }) {
         <ReportModal key={`${scenarioId}:${messages.at(-1)?.id}`} isOpen={isReportModalOpen} onClose={() => setIsReportModalOpen(false)} reportData={reportData} isLoadingReport={isLoadingReport} reportError={reportError} currentScenario={currentScenario} messages={messages} />
         <ItemBagModal isOpen={isBagModalOpen} onClose={() => setIsBagModalOpen(false)} wallet={wallet} currentScenario={currentScenario} currentComfort={comfortScore} onGiftItem={handleGiftItem} onOpenShop={() => router.push("/shop")} notice={bagNotice} />
         {isSongGiftModalOpen && <SongGiftModal isOpen onClose={() => setIsSongGiftModalOpen(false)} onSend={handleSendSongGift} isSending={isSendingSong} error={songGiftError} currentScenario={currentScenario} />}
+        {isSongFormatPopupOpen && <div className="modal-overlay" role="presentation"><div className="modal-box song-format-popup" role="alertdialog" aria-modal="true" aria-labelledby="song-format-title" aria-describedby="song-format-description"><div className="song-format-popup-icon" aria-hidden="true">📄</div><h3 id="song-format-title">양식에 맞지 않는 파일이에요</h3><p id="song-format-description">{SONG_FORMAT_ERROR}</p><button type="button" onClick={() => setIsSongFormatPopupOpen(false)}>확인</button></div></div>}
       </section>
       <AssistantDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} coachData={coachData} isLoadingCoach={isTyping} onSelectSuggestedReply={setInputValue} currentScenario={currentScenario} />
     </main>

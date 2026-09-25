@@ -1,4 +1,4 @@
-import { MAX_SONG_PAGE_BASE64_LENGTH, MAX_SONG_PAGES, MAX_SONG_PDF_BYTES } from "./songGiftConfig.js";
+import { MAX_SONG_PAGE_BASE64_LENGTH, MAX_SONG_PAGES, MAX_SONG_PDF_BYTES, SongFormatError } from "./songGiftConfig.js";
 
 export async function renderSongPdf(file) {
   if (!file || (file.type !== "application/pdf" && !file.name?.toLowerCase().endsWith(".pdf"))) {
@@ -9,20 +9,22 @@ export async function renderSongPdf(file) {
   }
   const bytes = new Uint8Array(await file.arrayBuffer());
   if (new TextDecoder("ascii").decode(bytes.subarray(0, 5)) !== "%PDF-") {
-    throw new Error("올바른 PDF 파일이 아니에요.");
+    throw new SongFormatError();
   }
 
-  const pdfjs = await import("pdfjs-dist/build/pdf.mjs");
-  pdfjs.GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.min.mjs", import.meta.url).toString();
-  const loadingTask = pdfjs.getDocument({ data: bytes });
+  const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
+  pdfjs.GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/legacy/build/pdf.worker.min.mjs", import.meta.url).toString();
+  let loadingTask;
   let pdf;
   try {
+    loadingTask = pdfjs.getDocument({ data: bytes });
     pdf = await loadingTask.promise;
-    if (pdf.numPages > MAX_SONG_PAGES) throw new Error(`악보는 ${MAX_SONG_PAGES}쪽까지 올릴 수 있어요.`);
+    if (pdf.numPages !== MAX_SONG_PAGES) throw new SongFormatError();
     const pages = [];
     for (let index = 1; index <= pdf.numPages; index += 1) {
       const page = await pdf.getPage(index);
       const unit = page.getViewport({ scale: 1 });
+      if (Math.abs(unit.width - 595.28) > 2 || Math.abs(unit.height - 841.89) > 2) throw new SongFormatError();
       const viewport = page.getViewport({ scale: Math.min(2.5, 2200 / Math.max(unit.width, unit.height)) });
       const canvas = document.createElement("canvas");
       canvas.width = Math.ceil(viewport.width);
@@ -39,7 +41,10 @@ export async function renderSongPdf(file) {
       pages.push(image);
     }
     return pages;
+  } catch (error) {
+    if (error?.name === "InvalidPDFException" || error?.name === "MissingPDFException") throw new SongFormatError();
+    throw error;
   } finally {
-    await loadingTask.destroy();
+    await loadingTask?.destroy();
   }
 }
