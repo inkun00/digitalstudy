@@ -238,7 +238,7 @@ export default function OpeningStory({ replay = false }) {
           <h1 id="opening-title">친구의 내일에<br />노래 한 곡을 선물해.</h1>
           <p className="opening-lead">너는 친구들이 들려준 말을 오래 기억했어. 충분히 이야기 나누어 마음이 가까워진 뒤, 그 마음을 담은 노래를 직접 만들어 건네기로 했지.</p>
           <OpeningScene page={page} />
-          <div className="opening-song-card"><span className="opening-song-note" aria-hidden="true">♫</span><div><small>네가 직접 만드는 선물</small><strong>친구를 위한 노래</strong><p>친구의 이야기를 떠올리며 위로와 희망을 가사에 담고, 완성한 악보 PDF를 선물해 봐.</p></div></div>
+          <div className="opening-song-card"><span className="opening-song-note" aria-hidden="true">♫</span><div><small>네가 직접 만드는 선물</small><strong>친구를 위한 노래</strong><p>친구의 이야기를 떠올리며 위로와 희망을 가사에 담고, 완성한 노래를 선물해 봐.</p></div></div>
           <div className="opening-goal"><span className="opening-goal-icon">✦</span><div><strong>이 이야기의 끝에서</strong><p>네 대화와 노래가 친구의 마음에 작은 빛이 되어, 친구가 다시 일상으로 한 걸음 나아가길 바라.</p></div></div>
           <div className="opening-final-avatars" aria-hidden="true">{SCENARIOS.slice(0, 5).map((scenario) => <Image key={scenario.id} src={scenario.avatar} alt="" width={38} height={38} sizes="38px" />)}</div>
           <p className="opening-final-line">이제, 네가 이어 쓸 이야기를 시작할 시간이야.</p>
