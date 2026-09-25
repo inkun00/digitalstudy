@@ -1320,18 +1320,16 @@ body {
 .opening-notification strong { display: block; font-size: 12px; }
 .opening-notification p { margin-top: 4px; color: #666; font-size: 12px; line-height: 1.35; }
 .opening-notification-badge { display: grid; place-items: center; width: 24px; height: 24px; flex: none; border-radius: 50%; background: #f2575d; color: #fff; font-size: 11px; font-weight: 900; }
-.opening-case-list { display: grid; gap: 11px; margin-top: 13px; }
-.opening-case { padding: 15px; border: 1px solid #ebe6d7; border-radius: 17px; background: #fff; box-shadow: 0 3px 12px #645b3610; }
-.opening-case-heading { display: flex; align-items: center; gap: 9px; }
-.opening-case-icon { display: grid; place-items: center; width: 33px; height: 33px; flex: none; border-radius: 10px; background: #fff5c5; font-size: 17px; }
-.opening-case h2 { font-size: 15px; font-weight: 900; letter-spacing: -.025em; }
-.opening-case > p { margin-top: 9px; color: #5c6064; font-size: 12px; line-height: 1.55; word-break: keep-all; }
-.opening-case-message { display: flex; align-items: flex-start; gap: 8px; margin-top: 10px; padding: 9px 11px; border-radius: 10px; background: #f2f4f8; color: #48505b; font-size: 12px; line-height: 1.45; }
-.opening-case-message img { width: 26px; height: 26px; flex: none; border-radius: 8px; object-fit: cover; }
-.opening-case-message strong { display: block; margin-bottom: 1px; color: #2b3745; font-size: 10px; }
-.opening-takeaway { margin-top: 13px; display: flex; gap: 8px; align-items: start; color: #795927; font-size: 12px; font-weight: 800; line-height: 1.5; word-break: keep-all; }
-.opening-takeaway span { color: #e75b68; }
-.opening-source { margin-top: 9px; color: #8c887f; font-size: 10px; }
+.opening-tale-paper { margin-top: 15px; padding: 18px 16px; border: 1px solid #e8ddbd; border-radius: 16px; background: linear-gradient(160deg, #fffdf5, #fff8e9); box-shadow: 0 5px 18px #786a4514; }
+.opening-tale-paper > p { color: #4b4539; font-size: 13px; line-height: 1.8; word-break: keep-all; }
+.opening-tale-messages { display: grid; gap: 9px; margin: 15px 0; }
+.opening-tale-message { display: flex; align-items: flex-start; gap: 9px; }
+.opening-tale-message img { width: 33px; height: 33px; flex: none; border-radius: 11px; object-fit: cover; }
+.opening-tale-message > div { min-width: 0; }
+.opening-tale-message strong { display: block; margin-bottom: 3px; color: #76643f; font-size: 10px; }
+.opening-tale-message p { width: fit-content; padding: 10px 12px; border: 1px solid #ede7d9; border-radius: 3px 12px 12px 12px; background: #fff; color: #36342f; font-size: 12px; line-height: 1.55; word-break: keep-all; }
+.opening-tale-paper > .opening-tale-ending { padding-top: 13px; border-top: 1px solid #e9e0ca; color: #66583a; }
+.opening-tale-afterword { margin-top: 16px; color: #66583a; font-size: 13px; line-height: 1.7; word-break: keep-all; }
 .opening-friend-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px 5px; padding: 20px 10px; margin-top: 20px; border: 1px solid #eee8d2; border-radius: 18px; background: #fff; }
 .opening-friend { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; font-size: 11px; font-weight: 800; }
 .opening-friend img { width: 51px; height: 51px; border-radius: 18px; object-fit: cover; }
@@ -1368,4 +1366,4 @@ body {
 .opening-back { width: 84px; flex: none; background: #f0ede2; color: #5d574a; }
 .opening-next { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex: 1; padding: 0 17px; background: #fee500; color: #291e0c; }
 .opening-next span { font-size: 21px; font-weight: 500; }
-@media (max-width: 360px) { .opening-chapter { padding-inline: 20px; } .opening-friend img { width: 43px; height: 43px; } .opening-case { padding: 12px; } .opening-song-card { gap: 12px; padding: 16px; } .opening-song-note { width: 60px; height: 60px; } }
+@media (max-width: 360px) { .opening-chapter { padding-inline: 20px; } .opening-friend img { width: 43px; height: 43px; } .opening-tale-paper { padding: 15px 13px; } .opening-song-card { gap: 12px; padding: 16px; } .opening-song-note { width: 60px; height: 60px; } }
