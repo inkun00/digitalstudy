@@ -78,7 +78,7 @@ export default function MyPage() {
           <button className="start-button" type="submit" disabled={busy}>{busy ? "처리 중…" : "프로필 저장하기"}<span aria-hidden="true">→</span></button>
         </form>
       </section>
-      {savedProfile && <Link className="my-back-link" href="/chat">채팅으로 돌아가기 →</Link>}
+      {savedProfile && <div className="my-quick-links"><Link className="my-back-link" href="/opening/replay">오프닝 다시 보기 →</Link><Link className="my-back-link" href="/chat">채팅으로 돌아가기 →</Link></div>}
       <button className="my-logout" type="button" onClick={logout} disabled={busy}>로그아웃</button>
     </div>
     <AppBottomNav active="my" />
