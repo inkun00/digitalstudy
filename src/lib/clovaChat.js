@@ -20,10 +20,13 @@ export function buildClovaMessages({ scenario, messages, counselor, evaluation }
   const latestGift = latestGiftMessage ? giftItemsById.get(latestGiftMessage.giftItemId) : null;
   const recentDialogue = messages
     .filter((message) => ((message.sender === "user" || message.sender === "victim") && message.text.trim()) ||
-      (message.sender === "system" && giftItemsById.has(message.giftItemId)))
+      (message.sender === "system" && (giftItemsById.has(message.giftItemId) || message.songGift?.title)))
     .slice(-24)
     .map((message) => {
       if (message.sender === "system") {
+        if (message.songGift?.title) {
+          return { role: "user", content: `🎵 직접 만든 노래 '${message.songGift.title}'의 악보 PDF를 선물했어. 편지: ${message.songGift.letter || "없음"}. 가사: ${message.songGift.lyrics || "없음"}.` };
+        }
         const gift = giftItemsById.get(message.giftItemId);
         return { role: "user", content: `🎁 ${gift.name}을 너에게 선물할게. ${gift.description} 이 선물에는 이런 마음을 담았어: ${gift.effect}` };
       }

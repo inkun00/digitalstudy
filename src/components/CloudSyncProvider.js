@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-import { collection, doc, getDoc, getDocs, serverTimestamp, setDoc } from "firebase/firestore";
+import { collection, doc, documentId, getDoc, getDocs, query, serverTimestamp, setDoc, where } from "firebase/firestore";
 import { SCENARIOS } from "@/lib/scenarios";
 import { parseHeartWallet } from "@/lib/heartShop";
 import { AUTH_CHANGED_EVENT, ensureAnonymousUser, firebaseConfigured, getFirebaseServices } from "@/lib/firebaseClient";
@@ -153,7 +153,7 @@ export default function CloudSyncProvider({ children }) {
       try {
         clearAccountCache(identity.uid);
         const [walletSnapshot, chatSnapshots, profileSnapshot] = await Promise.all([
-          getDoc(walletRef), getDocs(chatsRef), getDoc(profileRef),
+          getDoc(walletRef), getDocs(query(chatsRef, where(documentId(), "in", SCENARIOS.map((scenario) => scenario.id)))), getDoc(profileRef),
         ]);
         if (cancelled) return;
 

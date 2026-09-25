@@ -25,7 +25,7 @@ function AvatarButton({ scenario, onOpen }) {
   );
 }
 
-export default function ChatList({ messages, isTyping, currentScenario }) {
+export default function ChatList({ messages, isTyping, currentScenario, onDownloadSongPdf }) {
   const bottomRef = useRef(null);
   const closeButtonRef = useRef(null);
   const openedFromRef = useRef(null);
@@ -80,6 +80,16 @@ export default function ChatList({ messages, isTyping, currentScenario }) {
       {/* 메시지 리스트 */}
       {messages.map((msg) => {
         if (msg.sender === "system") {
+          if (msg.songGift) return <article key={msg.id} className="song-gift-card" aria-label={`${currentScenario.name}에게 보낸 노래 ${msg.songGift.title}`}>
+            <div className="gift-message-heading"><span>🎵 노래 선물</span><small>{currentScenario.name}에게 보냈어요</small></div>
+            <div className="song-gift-card-art"><span aria-hidden="true">♫</span><strong>{msg.songGift.title}</strong><small>직접 만든 노래 · 악보 PDF</small></div>
+            <div className="song-gift-card-details">
+              {msg.songGift.letter && <p><strong>편지</strong>{msg.songGift.letter}</p>}
+              {msg.songGift.lyrics && <details><summary>가사 보기</summary><p>{msg.songGift.lyrics}</p></details>}
+              <button type="button" onClick={() => onDownloadSongPdf(msg.songGift.fileId)}>📄 악보 PDF 내려받기</button>
+            </div>
+            <div className="gift-message-footer"><strong>노래 선물 완료</strong><time>{msg.time}</time></div>
+          </article>;
           const gift = FANTASY_ITEMS.find((item) => item.id === msg.giftItemId);
           if (gift) return <article key={msg.id} className="gift-message-card" aria-label={`${currentScenario.name}에게 보낸 선물 ${gift.name}`}>
             <div className="gift-message-heading"><span>🎁 선물하기</span><small>{currentScenario.name}에게 보냈어요</small></div>

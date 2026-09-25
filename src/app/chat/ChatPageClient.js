@@ -9,11 +9,15 @@ import AssistantDrawer from "@/components/AssistantDrawer";
 import ScenarioModal from "@/components/ScenarioModal";
 import ReportModal from "@/components/ReportModal";
 import ItemBagModal from "@/components/ItemBagModal";
+import SongGiftModal from "@/components/SongGiftModal";
 import { SCENARIOS } from "@/lib/scenarios";
 import { INITIAL_COMFORT, clampScore, getSuggestedReplies } from "@/lib/evaluation";
 import { getStoredProfile } from "@/lib/userProfile";
 import { SHOP_ITEMS, applyFantasyItem, awardHeartPoints, pointsForScoreIncrease, useHeartWallet } from "@/lib/heartShop";
 import { CLOUD_SESSION_EVENT, chatDirtyKey, chatStorageKey } from "@/lib/cloudState";
+import { renderSongPdf } from "@/lib/songPdf";
+import { downloadSongPdf, saveSongPdf } from "@/lib/songPdfStore";
+import { canReceiveSongGift, SONG_GIFT_REFUSAL } from "@/lib/songGiftConfig";
 import { useCloudSession } from "@/components/CloudSyncProvider";
 
 const subscribeToMount = () => () => {};
@@ -79,6 +83,9 @@ export default function ChatPageClient({ initialScenarioId }) {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [isBagModalOpen, setIsBagModalOpen] = useState(false);
   const [bagNotice, setBagNotice] = useState("");
+  const [isSongGiftModalOpen, setIsSongGiftModalOpen] = useState(false);
+  const [isSendingSong, setIsSendingSong] = useState(false);
+  const [songGiftError, setSongGiftError] = useState("");
   const [inputValue, setInputValue] = useState(() => typeof savedSession?.inputValue === "string" ? savedSession.inputValue.slice(0, 2000) : "");
   const generation = useRef(0);
   const replyInFlight = useRef(false);
@@ -213,6 +220,78 @@ export default function ChatPageClient({ initialScenarioId }) {
     void requestGiftReply(nextMessages);
   };
 
+  const handleOpenSongGift = () => {
+    if (isTyping || replyInFlight.current) return;
+    if (!canReceiveSongGift(comfortScore)) {
+      setMessages((current) => current.at(-1)?.sender === "victim" && current.at(-1)?.text === SONG_GIFT_REFUSAL
+        ? current
+        : [...current, { id: `victim-${crypto.randomUUID()}`, sender: "victim", text: SONG_GIFT_REFUSAL, time: currentTime(), unread: false }].slice(-80));
+      return;
+    }
+    setSongGiftError("");
+    setIsSongGiftModalOpen(true);
+  };
+
+  const handleSendSongGift = async (file) => {
+    if (replyInFlight.current || !file) return;
+    if (!canReceiveSongGift(comfortScore)) {
+      setIsSongGiftModalOpen(false);
+      handleOpenSongGift();
+      return;
+    }
+    if (!user?.uid || user.isAnonymous) {
+      setSongGiftError("로그인한 뒤 악보 PDF를 선물해 주세요.");
+      return;
+    }
+    replyInFlight.current = true;
+    const requestGeneration = generation.current;
+    setIsSendingSong(true);
+    setIsTyping(true);
+    setSongGiftError("");
+    try {
+      const pages = await renderSongPdf(file);
+      const response = await fetch("/api/song-gift", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ scenarioId, messages, userProfile: userProfile.current, comfortScore, pages }),
+      });
+      if (!response.ok) {
+        const failure = await response.json().catch(() => null);
+        throw new Error(failure?.error || "악보의 편지와 가사를 읽지 못했어요.");
+      }
+      const song = await response.json();
+      if (requestGeneration !== generation.current) return;
+      const fileId = `song-${crypto.randomUUID()}`;
+      await saveSongPdf({ uid: user.uid, fileId, scenarioId, file });
+      if (requestGeneration !== generation.current) return;
+      const giftMessage = {
+        id: `song-gift-${crypto.randomUUID()}`,
+        sender: "system",
+        text: `${currentScenario.name}에게 직접 만든 노래 '${song.title}'의 악보 PDF를 선물했어요.`,
+        songGift: { title: song.title, letter: song.letter, lyrics: song.lyrics, fileName: file.name, fileId },
+        time: currentTime(),
+      };
+      const victimMessage = { id: `victim-${crypto.randomUUID()}`, sender: "victim", text: song.reply, time: currentTime(), unread: false };
+      setMessages((current) => [...current, giftMessage, victimMessage].slice(-80));
+      setIsSongGiftModalOpen(false);
+    } catch (error) {
+      if (requestGeneration === generation.current) setSongGiftError(error.message);
+    } finally {
+      replyInFlight.current = false;
+      if (requestGeneration === generation.current) {
+        setIsTyping(false);
+        setIsSendingSong(false);
+      }
+    }
+  };
+
+  const handleDownloadSongPdf = async (fileId) => {
+    try {
+      await downloadSongPdf({ uid: user?.uid, fileId, scenarioId });
+    } catch (error) {
+      setChatError(error.message);
+    }
+  };
+
   const pendingGiftReply = messages.at(-1)?.sender === "system" && messages.at(-1)?.giftItemId;
 
   if (!isClient) return null;
@@ -221,13 +300,14 @@ export default function ChatPageClient({ initialScenarioId }) {
     <main className={`chat-workspace ${isDrawerOpen ? "assistant-visible" : ""}`}>
       <section className="app-container chat-pane" aria-label={`${currentScenario.name}와의 채팅`} style={equippedTheme ? { background: equippedTheme.background } : undefined}>
         <KakaoHeader currentScenario={currentScenario} comfortScore={comfortScore} heartPoints={wallet.balance} pointsEarned={lastEarnedPoints} onOpenScenarioModal={() => setIsScenarioModalOpen(true)} onOpenDrawer={() => setIsDrawerOpen((value) => !value)} onOpenBag={() => { setBagNotice(""); setIsBagModalOpen(true); }} onOpenShop={() => router.push("/shop")} drawerOpen={isDrawerOpen} onBack={() => router.push("/chat")} />
-        <ChatList messages={messages} isTyping={isTyping} currentScenario={currentScenario} />
+        <ChatList messages={messages} isTyping={isTyping} currentScenario={currentScenario} onDownloadSongPdf={handleDownloadSongPdf} />
         {chatError && <p role="alert" style={{ padding: "6px 14px", color: "#A22", fontSize: "12px" }}>{chatError}</p>}
         {pendingGiftReply && !isTyping && <button type="button" className="gift-reply-retry" onClick={() => requestGiftReply(messages)}>선물에 대한 답장 다시 받기</button>}
-        <ChatInput onSendMessage={handleSendMessage} isTyping={isTyping} turnCount={turnCount} comfortScore={comfortScore} onOpenReportModal={handleOpenReportModal} inputValue={inputValue} setInputValue={setInputValue} onOpenDrawer={() => setIsDrawerOpen(true)} onOpenGift={() => { setBagNotice(""); setIsBagModalOpen(true); }} />
+        <ChatInput onSendMessage={handleSendMessage} isTyping={isTyping} turnCount={turnCount} comfortScore={comfortScore} onOpenReportModal={handleOpenReportModal} inputValue={inputValue} setInputValue={setInputValue} onOpenDrawer={() => setIsDrawerOpen(true)} onOpenGift={() => { setBagNotice(""); setIsBagModalOpen(true); }} onOpenSongGift={handleOpenSongGift} />
         <ScenarioModal isOpen={isScenarioModalOpen} onClose={() => setIsScenarioModalOpen(false)} selectedScenarioId={scenarioId} onSelectScenario={handleSelectScenario} />
         <ReportModal key={`${scenarioId}:${messages.at(-1)?.id}`} isOpen={isReportModalOpen} onClose={() => setIsReportModalOpen(false)} reportData={reportData} isLoadingReport={isLoadingReport} reportError={reportError} currentScenario={currentScenario} messages={messages} />
         <ItemBagModal isOpen={isBagModalOpen} onClose={() => setIsBagModalOpen(false)} wallet={wallet} currentScenario={currentScenario} currentComfort={comfortScore} onGiftItem={handleGiftItem} onOpenShop={() => router.push("/shop")} notice={bagNotice} />
+        {isSongGiftModalOpen && <SongGiftModal isOpen onClose={() => setIsSongGiftModalOpen(false)} onSend={handleSendSongGift} isSending={isSendingSong} error={songGiftError} currentScenario={currentScenario} />}
       </section>
       <AssistantDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} coachData={coachData} isLoadingCoach={isTyping} onSelectSuggestedReply={setInputValue} currentScenario={currentScenario} />
     </main>
