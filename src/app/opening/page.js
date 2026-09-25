@@ -42,6 +42,24 @@ const TYPE_CHAPTERS = {
   },
 };
 
+const OPENING_SCENES = [
+  { src: "/opening/01-messages.webp", alt: "여러 친구에게서 온 메시지를 확인하는 아이" },
+  { src: "/opening/02-language.webp", alt: "상처 주는 댓글과 거짓 소문에 힘들어하는 두 친구와 다가오는 도움의 손길" },
+  { src: "/opening/03-exclusion.webp", alt: "단체 대화에서 소외되어 앉아 있는 친구 곁에 다른 친구가 다가오는 모습" },
+  { src: "/opening/04-coercion.webp", alt: "게임 아이템을 빼앗으려는 압박에 힘들어하며 어른에게 도움을 청하려는 아이" },
+  { src: "/opening/05-privacy.webp", alt: "흩어진 개인의 기록을 친구와 함께 안전하게 보호하는 모습" },
+  { src: "/opening/06-friends.webp", alt: "이야기를 들어 줄 친구를 기다리는 열 명의 아이들" },
+  { src: "/opening/07-listening.webp", alt: "힘든 이야기를 하는 친구에게 눈을 맞추고 귀 기울이는 아이" },
+  { src: "/opening/08-song.webp", alt: "친구를 위해 만든 악보를 따뜻하게 건네는 아이" },
+];
+
+function OpeningScene({ page }) {
+  const scene = OPENING_SCENES[page];
+  return <div className={`opening-scene opening-scene--${page}`}>
+    <Image src={scene.src} alt={scene.alt} fill priority={page === 0} sizes="(max-width: 480px) 90vw, 430px" />
+  </div>;
+}
+
 export default function OpeningPage() {
   const router = useRouter();
   const { user, profile, status, openingCompleted, finishOpening } = useCloudSession();
@@ -95,7 +113,7 @@ export default function OpeningPage() {
           <span className="opening-kicker">새로운 메시지가 도착했어요</span>
           <h1 id="opening-title">{name},<br />친구들이 너를 찾고 있어.</h1>
           <p className="opening-lead">온라인에서 힘든 일을 겪은 친구들이 연락했어. 먼저 어떤 이야기가 기다리고 있는지 함께 살펴보자.</p>
-          <div className="opening-hero-image"><Image src="/hero/counseling-children.webp" alt="한 친구가 다른 친구의 고민을 들어주는 모습" fill priority sizes="(max-width: 480px) 85vw, 350px" /></div>
+          <OpeningScene page={page} />
           <div className="opening-notification"><span className="opening-notification-icon">💬</span><div><strong>친구들의 채팅방</strong><p>“잠깐… 내 이야기 들어줄 수 있어?”</p></div><span className="opening-notification-badge">10</span></div>
         </section>}
 
@@ -103,6 +121,7 @@ export default function OpeningPage() {
           <span className="opening-kicker">사이버폭력 알아보기 · {page} / 4</span>
           <h1 id="opening-title">{TYPE_CHAPTERS[page].label}</h1>
           <p className="opening-lead">사이버폭력은 인터넷과 스마트폰에서 말·문자·사진·영상 등으로 다른 사람에게 피해를 주는 일이야.</p>
+          <OpeningScene page={page} />
           <div className="opening-case-list">{TYPE_CHAPTERS[page].cases.map((item) => <article className="opening-case" key={item.name}>
             <div className="opening-case-heading"><span className="opening-case-icon" aria-hidden="true">{item.icon}</span><h2>{item.name}</h2></div>
             <p>{item.description}</p>
@@ -116,6 +135,7 @@ export default function OpeningPage() {
           <span className="opening-kicker">그리고, 너에게 온 열 개의 메시지</span>
           <h1 id="opening-title">이 친구들은<br />모두 네 친구야.</h1>
           <p className="opening-lead">겪은 일은 조금씩 달라도, 자신의 이야기를 들어 줄 사람을 기다리는 마음은 같아.</p>
+          <OpeningScene page={page} />
           <div className="opening-friend-grid">{SCENARIOS.map((scenario) => <div className="opening-friend" key={scenario.id}>
             <Image src={scenario.avatar} alt="" width={54} height={54} sizes="54px" /><span>{scenario.name}</span>
           </div>)}</div>
@@ -126,6 +146,7 @@ export default function OpeningPage() {
           <span className="opening-kicker">첫 번째 미션 · 대화로 곁에 있기</span>
           <h1 id="opening-title">정답을 서두르지 말고,<br />먼저 들어줘.</h1>
           <p className="opening-lead">친구를 선택하고 메시지로 대화해 봐. 감정을 인정하고, 혼자가 아니라는 말을 전하고, 필요하면 믿을 만한 어른의 도움을 함께 찾아줘.</p>
+          <OpeningScene page={page} />
           <div className="opening-chat-scene">
             <div className="opening-chat-row"><Image src={SCENARIOS[0].avatar} alt="" width={42} height={42} sizes="42px" /><p>“내 얘기를 들어줄 수 있어?”</p></div>
             <div className="opening-chat-row opening-chat-row-self"><p>“응, 천천히 말해줘. 내가 듣고 있을게.”</p></div>
@@ -138,6 +159,7 @@ export default function OpeningPage() {
           <span className="opening-kicker">마지막 미션 · 희망을 노래로</span>
           <h1 id="opening-title">친구에게 들려줄<br />희망의 노래를 만들어.</h1>
           <p className="opening-lead">충분히 대화해 마음의 거리가 가까워지면, 네가 만든 노래의 악보 PDF를 선물할 수 있어.</p>
+          <OpeningScene page={page} />
           <div className="opening-song-card"><span className="opening-song-note" aria-hidden="true">♫</span><div><small>너의 마음을 담은 선물</small><strong>친구를 위한 노래</strong><p>대화에서 들은 마음을 떠올리며 위로와 희망을 가사에 담아 봐.</p></div></div>
           <div className="opening-goal"><span className="opening-goal-icon">✦</span><div><strong>우리의 목표</strong><p>친구가 다시 일상으로 한 걸음 나아갈 수 있도록, 대화와 노래로 곁에 있어 주기.</p></div></div>
           <div className="opening-final-avatars" aria-hidden="true">{SCENARIOS.slice(0, 5).map((scenario) => <Image key={scenario.id} src={scenario.avatar} alt="" width={38} height={38} sizes="38px" />)}</div>
