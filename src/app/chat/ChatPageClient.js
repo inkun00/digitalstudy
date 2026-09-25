@@ -55,7 +55,7 @@ export default function ChatPageClient({ initialScenarioId }) {
   const router = useRouter();
   const wallet = useHeartWallet();
   const { status, user, profile, openingCompleted } = useCloudSession();
-  const userProfile = useRef(getStoredProfile());
+  const userProfile = profile || getStoredProfile();
   useEffect(() => {
     if (status !== "ready") return;
     if (!user || user.isAnonymous) router.replace("/");
@@ -134,7 +134,7 @@ export default function ChatPageClient({ initialScenarioId }) {
       const evaluatedMessages = nextMessages.map((message) => message.id === userMessage.id ? { ...message, evaluation: { turn_delta: assessment.turn_delta, evidence: assessment.evidence, feedback: assessment.feedback } } : message);
       const chatResponse = await fetch("/api/chat", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ scenarioId, messages: evaluatedMessages, evaluation: assessment, userProfile: userProfile.current }),
+        body: JSON.stringify({ scenarioId, messages: evaluatedMessages, evaluation: assessment, userProfile }),
       });
       if (!chatResponse.ok) {
         const failure = await chatResponse.json().catch(() => null);
@@ -171,7 +171,7 @@ export default function ChatPageClient({ initialScenarioId }) {
     try {
       const response = await fetch("/api/chat", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ scenarioId, messages: giftMessages, userProfile: userProfile.current }),
+        body: JSON.stringify({ scenarioId, messages: giftMessages, userProfile }),
       });
       if (!response.ok) {
         const failure = await response.json().catch(() => null);
@@ -258,7 +258,7 @@ export default function ChatPageClient({ initialScenarioId }) {
       const pages = await renderSongPdf(file);
       const response = await fetch("/api/song-gift", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ scenarioId, messages, userProfile: userProfile.current, comfortScore, pages }),
+        body: JSON.stringify({ scenarioId, messages, userProfile, comfortScore, pages }),
       });
       if (!response.ok) {
         const failure = await response.json().catch(() => null);

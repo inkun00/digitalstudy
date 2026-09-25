@@ -37,6 +37,26 @@ test("하이퍼클로바X 요청에 피해 상황과 실제 대화 이력을 담
   assert.equal(JSON.parse(request.body).messages.at(-1).role, "user");
 });
 
+test("대화가 이어지면 사용자 이름을 가끔 부르고 최근에 불렀다면 반복하지 않는다", () => {
+  const turns = [
+    { sender: "victim", text: "학교에 가기 무서워." },
+    { sender: "user", text: "그랬구나. 무서웠겠다." },
+    { sender: "victim", text: "응, 계속 생각나." },
+    { sender: "user", text: "내가 듣고 있을게." },
+    { sender: "victim", text: "고마워." },
+    { sender: "user", text: "천천히 말해줘." },
+  ];
+  const earlyPrompt = buildClovaMessages({ scenario, counselor, messages: turns.slice(0, 4) });
+  assert.match(earlyPrompt[0].content, /이번 답장에 억지로 넣지 않는다/);
+
+  const namePrompt = buildClovaMessages({ scenario, counselor, messages: turns });
+  assert.match(namePrompt[0].content, /이번 답장에는 대화 흐름에 맞게 상대 이름 하늘을 한 번 자연스럽게 부른다/);
+
+  const recentlyNamed = turns.map((message, index) => index === 4 ? { ...message, text: "하늘아, 고마워." } : message);
+  const repeatPrompt = buildClovaMessages({ scenario, counselor, messages: recentlyNamed });
+  assert.match(repeatPrompt[0].content, /최근 답장에서 이름을 불렀다면 특히 반복하지 않는다/);
+});
+
 test("선물은 친구의 대화 맥락에 포함하고 일반 시스템 알림은 제외한다", () => {
   const gift = FANTASY_ITEMS[0];
   const modelMessages = buildClovaMessages({
