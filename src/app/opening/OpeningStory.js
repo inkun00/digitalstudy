@@ -49,7 +49,7 @@ const OPENING_SCENES = [
   { src: "/opening/04-coercion.webp", alt: "게임 아이템을 빼앗으려는 압박에 힘들어하며 어른에게 도움을 청하려는 아이" },
   { src: "/opening/05-privacy.webp", alt: "흩어진 개인의 기록을 친구와 함께 안전하게 보호하는 모습" },
   { src: "/opening/06-friends.webp", alt: "이야기를 들어 줄 친구를 기다리는 열 명의 아이들" },
-  { src: "/opening/07-listening.webp", alt: "힘든 이야기를 하는 친구에게 눈을 맞추고 귀 기울이는 아이" },
+  { src: "/opening/07-listening-v2.webp", alt: "힘든 이야기를 하는 친구에게 눈을 맞추고 귀 기울이는 아이" },
   { src: "/opening/08-song.webp", alt: "친구를 위해 만든 악보를 따뜻하게 건네는 아이" },
 ];
 
