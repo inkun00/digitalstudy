@@ -54,13 +54,14 @@ function initialCoach(scenario) {
 export default function ChatPageClient({ initialScenarioId }) {
   const router = useRouter();
   const wallet = useHeartWallet();
-  const { status, user, profile } = useCloudSession();
+  const { status, user, profile, openingCompleted } = useCloudSession();
   const userProfile = useRef(getStoredProfile());
   useEffect(() => {
     if (status !== "ready") return;
     if (!user || user.isAnonymous) router.replace("/");
     else if (!profile && !getStoredProfile()) router.replace("/my");
-  }, [profile, router, status, user]);
+    else if (!openingCompleted) router.replace("/opening");
+  }, [openingCompleted, profile, router, status, user]);
   const initialScenario = SCENARIOS.find((scenario) => scenario.id === initialScenarioId);
   const scenarioId = initialScenario.id;
   const currentScenario = initialScenario;

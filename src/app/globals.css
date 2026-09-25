@@ -1290,3 +1290,78 @@ body {
   transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(24, 134, 138, 0.4);
 }
+
+/* 첫 로그인 오프닝 스토리 */
+.opening-page { width: 100%; max-width: 480px; min-height: 100dvh; height: 100dvh; max-height: 940px; background: #fffdf3; box-shadow: 0 12px 40px #0002; }
+.opening-frame { height: 100%; min-height: 0; display: flex; flex-direction: column; }
+.opening-topbar { flex: none; display: flex; justify-content: space-between; align-items: center; padding: 20px 24px 13px; }
+.opening-topbar > div { display: flex; align-items: center; gap: 8px; }
+.opening-brand-mark { display: grid; place-items: center; width: 29px; height: 29px; border-radius: 9px; background: #fee500; color: #3a1d1d; font-size: 15px; }
+.opening-brand { color: #4c4230; font-size: 10px; font-weight: 900; letter-spacing: .12em; }
+.opening-page-count { color: #786d51; font-size: 12px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.opening-progress { flex: none; display: flex; gap: 5px; padding: 0 24px 16px; }
+.opening-progress span { flex: 1; height: 5px; border-radius: 5px; background: #e9e3ce; transition: background .2s; }
+.opening-progress span.is-filled { background: #fee500; }
+.opening-story { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+.opening-chapter { min-height: 100%; padding: 15px 26px 26px; display: flex; flex-direction: column; }
+.opening-kicker { width: fit-content; border-radius: 30px; padding: 6px 10px; background: #fff2b8; color: #7b5916; font-size: 11px; font-weight: 900; }
+.opening-chapter h1 { margin-top: 17px; color: #2c2925; font-size: clamp(27px, 7vw, 33px); line-height: 1.3; font-weight: 900; letter-spacing: -.055em; word-break: keep-all; }
+.opening-lead { margin-top: 12px; color: #655f57; font-size: 14px; line-height: 1.65; word-break: keep-all; }
+.opening-hero-image { position: relative; width: 100%; min-height: 215px; margin-top: 12px; background: radial-gradient(ellipse at center, #fff3bb 0, #fffdf3 69%); }
+.opening-hero-image img { object-fit: contain; }
+.opening-notification { display: flex; align-items: center; gap: 12px; padding: 14px; margin-top: 5px; border: 1px solid #eee6d1; border-radius: 17px; background: #fff; box-shadow: 0 7px 20px #786a4520; }
+.opening-notification-icon { display: grid; place-items: center; width: 38px; height: 38px; flex: none; border-radius: 12px; background: #fee500; font-size: 18px; }
+.opening-notification div { min-width: 0; flex: 1; }
+.opening-notification strong { display: block; font-size: 12px; }
+.opening-notification p { margin-top: 4px; color: #666; font-size: 12px; line-height: 1.35; }
+.opening-notification-badge { display: grid; place-items: center; width: 24px; height: 24px; flex: none; border-radius: 50%; background: #f2575d; color: #fff; font-size: 11px; font-weight: 900; }
+.opening-types .opening-lead { margin-bottom: 13px; }
+.opening-case-list { display: grid; gap: 11px; }
+.opening-case { padding: 15px; border: 1px solid #ebe6d7; border-radius: 17px; background: #fff; box-shadow: 0 3px 12px #645b3610; }
+.opening-case-heading { display: flex; align-items: center; gap: 9px; }
+.opening-case-icon { display: grid; place-items: center; width: 33px; height: 33px; flex: none; border-radius: 10px; background: #fff5c5; font-size: 17px; }
+.opening-case h2 { font-size: 15px; font-weight: 900; letter-spacing: -.025em; }
+.opening-case > p { margin-top: 9px; color: #5c6064; font-size: 12px; line-height: 1.55; word-break: keep-all; }
+.opening-case-message { display: flex; align-items: flex-start; gap: 8px; margin-top: 10px; padding: 9px 11px; border-radius: 10px; background: #f2f4f8; color: #48505b; font-size: 12px; line-height: 1.45; }
+.opening-case-message img { width: 26px; height: 26px; flex: none; border-radius: 8px; object-fit: cover; }
+.opening-case-message strong { display: block; margin-bottom: 1px; color: #2b3745; font-size: 10px; }
+.opening-takeaway { margin-top: 13px; display: flex; gap: 8px; align-items: start; color: #795927; font-size: 12px; font-weight: 800; line-height: 1.5; word-break: keep-all; }
+.opening-takeaway span { color: #e75b68; }
+.opening-source { margin-top: 9px; color: #8c887f; font-size: 10px; }
+.opening-friend-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px 5px; padding: 20px 10px; margin-top: 20px; border: 1px solid #eee8d2; border-radius: 18px; background: #fff; }
+.opening-friend { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; font-size: 11px; font-weight: 800; }
+.opening-friend img { width: 51px; height: 51px; border-radius: 18px; object-fit: cover; }
+.opening-chat-preview { margin-top: 17px; padding: 15px; border-radius: 14px; background: #c9d9e9; }
+.opening-chat-preview span { color: #354b5c; font-size: 11px; font-weight: 800; }
+.opening-chat-preview p { width: fit-content; margin-top: 9px; padding: 11px 13px; border-radius: 3px 13px 13px 13px; background: #fff; font-size: 13px; line-height: 1.55; }
+.opening-chat-scene { display: grid; gap: 13px; margin-top: 22px; padding: 21px 14px; border-radius: 17px; background: #c9d9e9; }
+.opening-chat-row { display: flex; gap: 7px; align-items: flex-start; }
+.opening-chat-row img { border-radius: 15px; object-fit: cover; }
+.opening-chat-row p { max-width: 76%; padding: 10px 12px; border-radius: 4px 13px 13px 13px; background: #fff; font-size: 12px; line-height: 1.55; }
+.opening-chat-row-self { justify-content: flex-end; }
+.opening-chat-row-self p { border-radius: 13px 4px 13px 13px; background: #fee500; }
+.opening-mission-foot { display: flex; gap: 12px; align-items: center; margin-top: 17px; padding: 14px; border: 1px solid #f2de98; border-radius: 14px; background: #fff8d9; }
+.opening-mission-foot > span { color: #f25c6a; font-size: 24px; }
+.opening-mission-foot strong { font-size: 12px; }
+.opening-mission-foot p { margin-top: 3px; color: #655d4a; font-size: 11px; line-height: 1.45; }
+.opening-song-card { display: flex; align-items: center; gap: 20px; min-height: 176px; margin-top: 22px; padding: 22px 20px; border: 1px solid #ecd68b; border-radius: 20px; background: linear-gradient(145deg, #fff7d0, #fff); box-shadow: 0 8px 25px #9b833324; }
+.opening-song-note { display: grid; place-items: center; width: 73px; height: 73px; flex: none; border-radius: 20px; background: #fee500; color: #3a1d1d; font-size: 41px; transform: rotate(-7deg); }
+.opening-song-card small { display: block; color: #876d2e; font-size: 11px; font-weight: 800; }
+.opening-song-card strong { display: block; margin-top: 5px; font-size: 19px; font-weight: 900; }
+.opening-song-card p { margin-top: 10px; color: #6b6250; font-size: 11px; line-height: 1.55; word-break: keep-all; }
+.opening-goal { display: flex; gap: 13px; align-items: flex-start; margin-top: 17px; padding: 16px; border-radius: 15px; background: #eaf5f1; }
+.opening-goal-icon { color: #198477; font-size: 23px; line-height: 1; }
+.opening-goal strong { color: #1d5d54; font-size: 12px; }
+.opening-goal p { margin-top: 4px; color: #405d58; font-size: 12px; line-height: 1.55; word-break: keep-all; }
+.opening-final-avatars { display: flex; justify-content: center; margin-top: 24px; padding-left: 10px; }
+.opening-final-avatars img { width: 42px; height: 42px; margin-left: -10px; border: 2px solid #fff; border-radius: 50%; object-fit: cover; }
+.opening-final-line { margin-top: 9px; color: #766a50; font-size: 12px; font-weight: 800; text-align: center; }
+.opening-footer { flex: none; padding: 14px 24px max(20px, env(safe-area-inset-bottom)); border-top: 1px solid #f0ebd8; background: #fffdf3; }
+.opening-error { margin-bottom: 8px; color: #af3333; font-size: 11px; line-height: 1.4; }
+.opening-footer-actions { display: flex; gap: 10px; }
+.opening-footer button { min-height: 49px; border: 0; border-radius: 12px; font: inherit; font-size: 14px; font-weight: 900; cursor: pointer; }
+.opening-footer button:disabled { opacity: .6; cursor: wait; }
+.opening-back { width: 84px; flex: none; background: #f0ede2; color: #5d574a; }
+.opening-next { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex: 1; padding: 0 17px; background: #fee500; color: #291e0c; }
+.opening-next span { font-size: 21px; font-weight: 500; }
+@media (max-width: 360px) { .opening-chapter { padding-inline: 20px; } .opening-friend img { width: 43px; height: 43px; } .opening-case { padding: 12px; } .opening-song-card { gap: 12px; padding: 16px; } .opening-song-note { width: 60px; height: 60px; } }

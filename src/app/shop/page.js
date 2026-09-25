@@ -15,7 +15,7 @@ const CATEGORY_COLORS = ["#fff2cd", "#e9e5ff", "#dff4ec", "#ffe8dc", "#e0effc"];
 export default function ShopPage() {
   const router = useRouter();
   const wallet = useHeartWallet();
-  const { status, user, profile } = useCloudSession();
+  const { status, user, profile, openingCompleted } = useCloudSession();
   const [tab, setTab] = useState("fantasy");
   const [category, setCategory] = useState("all");
   const [notice, setNotice] = useState("");
@@ -24,7 +24,8 @@ export default function ShopPage() {
     if (status !== "ready") return;
     if (!user || user.isAnonymous) router.replace("/");
     else if (!profile && !getStoredProfile()) router.replace("/my");
-  }, [profile, router, status, user]);
+    else if (!openingCompleted) router.replace("/opening");
+  }, [openingCompleted, profile, router, status, user]);
 
   const visibleItems = category === "all" ? FANTASY_ITEMS : FANTASY_ITEMS.filter((item) => item.categoryId === category);
   const bagItems = FANTASY_ITEMS.filter((item) => wallet.bag[item.id]);

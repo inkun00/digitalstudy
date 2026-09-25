@@ -12,7 +12,7 @@ const EMPTY_PROFILE = { name: "", gender: "", age: "" };
 
 export default function StartPage() {
   const router = useRouter();
-  const { user, profile: savedProfile, status } = useCloudSession();
+  const { user, profile: savedProfile, openingCompleted, status } = useCloudSession();
   const [mode, setMode] = useState("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,9 +23,9 @@ export default function StartPage() {
 
   useEffect(() => {
     if (status === "ready" && user && !user.isAnonymous && !busy) {
-      router.replace(savedProfile ? "/chat" : "/my");
+      router.replace(savedProfile || getStoredProfile() ? (openingCompleted ? "/chat" : "/opening") : "/my");
     }
-  }, [busy, router, savedProfile, status, user]);
+  }, [busy, openingCompleted, router, savedProfile, status, user]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -47,10 +47,10 @@ export default function StartPage() {
     try {
       if (mode === "signup") {
         await registerAccount(email, password, profile);
-        router.replace("/chat");
+        router.replace("/opening");
       } else {
         await loginAccount(email, password);
-        router.replace("/chat");
+        router.replace("/opening");
       }
     } catch (failure) {
       setError(accountErrorMessage(failure));

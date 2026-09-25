@@ -10,7 +10,7 @@ import { ACTIVE_UID_KEY, CLOUD_SESSION_EVENT, WALLET_DIRTY_KEY, WALLET_STORAGE_K
 import { PROFILE_CHANGE_EVENT, clearStoredProfile, getStoredProfile, normalizeUserProfile, storeProfile } from "@/lib/userProfile";
 
 const SESSION_UID_KEY = "heart_cloud_tab_uid";
-const CloudSessionContext = createContext({ status: "loading", user: null, profile: null });
+const CloudSessionContext = createContext({ status: "loading", user: null, profile: null, openingCompleted: false, finishOpening: async () => {} });
 
 export function useCloudSession() {
   return useContext(CloudSessionContext);
@@ -62,6 +62,7 @@ export default function CloudSyncProvider({ children }) {
   const [status, setStatus] = useState(firebaseConfigured ? "loading" : "unconfigured");
   const [identity, setIdentity] = useState(null);
   const [profile, setProfile] = useState(null);
+  const [openingCompleted, setOpeningCompleted] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const currentUid = useRef(null);
 
@@ -80,6 +81,7 @@ export default function CloudSyncProvider({ children }) {
         return;
       }
       if (currentUid.current !== user.uid) setStatus("loading");
+      if (currentUid.current !== user.uid) setOpeningCompleted(false);
       currentUid.current = user.uid;
       setIdentity({ uid: user.uid, email: user.email, isAnonymous: user.isAnonymous });
     };
@@ -158,6 +160,7 @@ export default function CloudSyncProvider({ children }) {
         if (cancelled) return;
 
         const savedProfile = profileSnapshot.exists() ? normalizeUserProfile(profileSnapshot.data()) : null;
+        setOpeningCompleted(profileSnapshot.exists() && profileSnapshot.data().openingCompleted === true);
         if (savedProfile) storeProfile(savedProfile);
         else if (!auth.currentUser?.isAnonymous) clearStoredProfile();
         setProfile(getStoredProfile());
@@ -205,7 +208,17 @@ export default function CloudSyncProvider({ children }) {
     };
   }, [identity?.uid, retryCount]);
 
-  const session = { status, user: identity, profile };
+  const finishOpening = async () => {
+    if (!identity?.uid || identity.isAnonymous) throw new Error("로그인이 필요해요.");
+    const { db } = getFirebaseServices();
+    await setDoc(doc(db, "users", identity.uid, "state", "profile"), {
+      openingCompleted: true,
+      updatedAt: serverTimestamp(),
+    }, { merge: true });
+    setOpeningCompleted(true);
+  };
+
+  const session = { status, user: identity, profile, openingCompleted, finishOpening };
   if (status === "loading") return <CloudSessionContext.Provider value={session}><main className="cloud-loading" role="status">저장된 대화와 하트를 불러오는 중이에요…</main></CloudSessionContext.Provider>;
   return <CloudSessionContext.Provider value={session}>
     {status === "unconfigured" && <p className="cloud-status" role="status">Firebase 연결 전입니다. 현재 기록은 이 브라우저에만 저장돼요.</p>}

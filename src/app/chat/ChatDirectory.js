@@ -13,14 +13,15 @@ import { useCloudSession } from "@/components/CloudSyncProvider";
 export default function ChatDirectory() {
   const router = useRouter();
   const wallet = useHeartWallet();
-  const { status, user, profile } = useCloudSession();
+  const { status, user, profile, openingCompleted } = useCloudSession();
   const [query, setQuery] = useState("");
 
   useEffect(() => {
     if (status !== "ready") return;
     if (!user || user.isAnonymous) router.replace("/");
     else if (!profile && !getStoredProfile()) router.replace("/my");
-  }, [profile, router, status, user]);
+    else if (!openingCompleted) router.replace("/opening");
+  }, [openingCompleted, profile, router, status, user]);
 
   const filteredScenarios = SCENARIOS.filter((scenario) =>
     `${scenario.name} ${scenario.grade} ${scenario.tag} ${scenario.storyBrief}`.toLocaleLowerCase("ko").includes(query.trim().toLocaleLowerCase("ko"))

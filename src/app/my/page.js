@@ -15,7 +15,7 @@ const EMPTY_PROFILE = { name: "", gender: "", age: "" };
 export default function MyPage() {
   const router = useRouter();
   const wallet = useHeartWallet();
-  const { user, profile: savedProfile, status } = useCloudSession();
+  const { user, profile: savedProfile, openingCompleted, status } = useCloudSession();
   const [profile, setProfile] = useState(() => savedProfile || EMPTY_PROFILE);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
@@ -36,6 +36,10 @@ export default function MyPage() {
     setNotice("");
     try {
       await saveAccountProfile(profile);
+      if (!openingCompleted) {
+        router.replace("/opening");
+        return;
+      }
       setNotice("프로필을 저장했어요. 다음 대화부터 새 정보가 적용돼요.");
     } catch (failure) {
       setError(accountErrorMessage(failure));

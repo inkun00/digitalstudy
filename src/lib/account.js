@@ -29,6 +29,7 @@ export async function registerAccount(email, password, profile) {
   window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
   await setDoc(doc(db, "users", auth.currentUser.uid, "state", "profile"), {
     ...normalized,
+    openingCompleted: false,
     updatedAt: serverTimestamp(),
   });
   storeProfile(normalized);
@@ -51,7 +52,7 @@ export async function saveAccountProfile(profile) {
   await setDoc(doc(db, "users", auth.currentUser.uid, "state", "profile"), {
     ...normalized,
     updatedAt: serverTimestamp(),
-  });
+  }, { merge: true });
   storeProfile(normalized);
   return normalized;
 }
