@@ -46,7 +46,7 @@ test("판타지 아이템 100종은 이름·소개·효과·이미지 경로가 
   for (const item of FANTASY_ITEMS) {
     assert.ok(item.description.length > 10);
     assert.ok(item.effect.length > 10);
-    assert.match(item.image, /^\/items\/fantasy-\d{3}\.png$/);
+    assert.match(item.image, /^\/items\/fantasy-\d{3}\.webp$/);
     assert.ok(item.boost >= 10, `${item.name}의 기본 안정도는 10 이상이어야 해요.`);
     assert.ok(GIFT_FOCUS_LABELS[item.focus]);
     assert.ok(SCENARIOS.some((scenario) => getGiftRelevance(item, scenario.id).matched), `${item.name}은 연결되는 피해 상황이 없어요.`);
@@ -113,14 +113,27 @@ test("안정도가 이미 최대여도 선물은 전달되고 추가 점수는 �
   }
 });
 
-test("100종의 아이템 그림은 모두 별도의 PNG 파일이다", () => {
+test("100종의 아이템 그림은 모두 별도의 WebP 파일이다", () => {
   const hashes = FANTASY_ITEMS.map((item) => {
     const bytes = readFileSync(new URL(`../public${item.image}`, import.meta.url));
-    assert.ok(bytes.length > 50_000, `${item.name} 이미지가 비어 있어요.`);
-    assert.equal(bytes.subarray(0, 8).toString("hex"), "89504e470d0a1a0a");
+    assert.ok(bytes.length > 5_000, `${item.name} 이미지가 비어 있어요.`);
+    assert.equal(bytes.toString("ascii", 0, 4), "RIFF");
+    assert.equal(bytes.toString("ascii", 8, 12), "WEBP");
     return createHash("sha256").update(bytes).digest("hex");
   });
   assert.equal(new Set(hashes).size, 100);
+});
+
+test("모든 피해자 프로필과 시작 화면 그림이 WebP로 제공된다", () => {
+  for (const scenario of SCENARIOS) {
+    assert.match(scenario.avatar, /^\/avatars\/[a-z]+-v2\.webp$/);
+    const bytes = readFileSync(new URL(`../public${scenario.avatar}`, import.meta.url));
+    assert.equal(bytes.toString("ascii", 0, 4), "RIFF");
+    assert.equal(bytes.toString("ascii", 8, 12), "WEBP");
+  }
+  const hero = readFileSync(new URL("../public/hero/counseling-children.webp", import.meta.url));
+  assert.equal(hero.toString("ascii", 0, 4), "RIFF");
+  assert.equal(hero.toString("ascii", 8, 12), "WEBP");
 });
 
 test("하트로 배경을 구매하고 보유한 배경만 적용할 수 있다", () => {

@@ -63,7 +63,7 @@ export default function StartPage() {
     <div className="start-shell">
       <header className="start-hero">
         <div className="start-hero-scene">
-          <Image src="/hero/counseling-children.png" alt="고민을 말하는 아이와 따뜻하게 귀 기울이는 아이" width={1536} height={1024} priority sizes="(max-width: 480px) 88vw, 320px" />
+          <Image src="/hero/counseling-children.webp" alt="고민을 말하는 아이와 따뜻하게 귀 기울이는 아이" width={960} height={640} priority sizes="(max-width: 480px) 88vw, 320px" />
         </div>
         <span className="start-eyebrow">H.E.A.R.T PROJECT</span>
         <h1>사이버 마음 상담소</h1>

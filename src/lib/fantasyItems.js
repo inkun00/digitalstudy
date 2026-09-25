@@ -157,6 +157,6 @@ export const FANTASY_ITEMS = GROUPS.flatMap((group, groupIndex) => group.items.m
     boost,
     focus: ITEM_FOCUS_BY_GROUP[groupIndex][index],
     price: 10 + tier * 2 + (index % 3) * 2,
-    image: `/items/fantasy-${number}.png`,
+    image: `/items/fantasy-${number}.webp`,
   };
 }));
