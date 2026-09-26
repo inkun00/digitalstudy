@@ -67,7 +67,7 @@ export default function CertificatePage() {
         <ol>{CERTIFICATE_TIERS.map((tier) => <li key={tier.level} className={progress.tier?.level === tier.level ? "current" : ""}>
           <span>{tier.level}단계 · {tier.name}</span><small>상담 {tier.counseled}명 · 안정도 +{tier.stabilityGain}점 · 노래 {tier.songs}명</small>
         </li>)}</ol>
-        <p className="certificate-method">안정도 상승은 각 친구와 대화해 오른 점수를 합산하며, 아이템으로 오른 점수는 제외해요. 노래는 피해자의 감사 답장과 엔딩이 열린 친구를 한 명씩 셉니다.</p>
+        <p className="certificate-method">안정도 상승은 각 친구와 대화해 오른 점수를 합산하며, 아이템으로 오른 점수는 제외해요. 노래는 한 명에게 선물해 엔딩을 완료하면 모든 등급의 노래 조건을 충족해요. 같은 가사의 노래는 다른 친구에게 다시 선물할 수 없어요.</p>
       </section>
     </div>
   </main>;

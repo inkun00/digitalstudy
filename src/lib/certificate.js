@@ -4,10 +4,10 @@ import { SCENARIOS } from "./scenarios.js";
 
 export const CERTIFICATE_TIERS = [
   { level: 1, name: "마음의 첫걸음", badge: "BRONZE", counseled: 1, stabilityGain: 0, songs: 1 },
-  { level: 2, name: "따뜻한 경청자", badge: "SILVER", counseled: 2, stabilityGain: 40, songs: 2 },
-  { level: 3, name: "믿음의 동행자", badge: "SAPPHIRE", counseled: 4, stabilityGain: 100, songs: 3 },
-  { level: 4, name: "희망의 상담사", badge: "GOLD", counseled: 7, stabilityGain: 200, songs: 6 },
-  { level: 5, name: "빛나는 명예상담사", badge: "CROWN", counseled: 10, stabilityGain: 300, songs: 10 },
+  { level: 2, name: "따뜻한 경청자", badge: "SILVER", counseled: 2, stabilityGain: 40, songs: 1 },
+  { level: 3, name: "믿음의 동행자", badge: "SAPPHIRE", counseled: 4, stabilityGain: 100, songs: 1 },
+  { level: 4, name: "희망의 상담사", badge: "GOLD", counseled: 7, stabilityGain: 200, songs: 1 },
+  { level: 5, name: "빛나는 명예상담사", badge: "CROWN", counseled: 10, stabilityGain: 300, songs: 1 },
 ];
 
 export function calculateCertificateProgress(chats = {}) {

@@ -8,6 +8,7 @@ import { parseHeartWallet } from "@/lib/heartShop";
 import { AUTH_CHANGED_EVENT, ensureAnonymousUser, firebaseConfigured, getFirebaseServices } from "@/lib/firebaseClient";
 import { ACTIVE_UID_KEY, CLOUD_SESSION_EVENT, WALLET_DIRTY_KEY, WALLET_STORAGE_KEY, accountCacheBoundary, chatDirtyKey, chatStorageKey, chooseStoredValue } from "@/lib/cloudState";
 import { PROFILE_CHANGE_EVENT, clearStoredProfile, getStoredProfile, normalizeUserProfile, storeProfile } from "@/lib/userProfile";
+import { SONG_FINGERPRINT_PATTERN } from "@/lib/songFingerprint";
 
 const SESSION_UID_KEY = "heart_cloud_tab_uid";
 const CloudSessionContext = createContext({ status: "loading", user: null, profile: null, openingCompleted: false, finishOpening: async () => {} });
@@ -57,6 +58,12 @@ function parseChat(raw) {
       completedSongGift: value.completedSongGift?.accepted === true && typeof value.completedSongGift.title === "string" && value.completedSongGift.title.trim()
         ? { title: value.completedSongGift.title.slice(0, 120), accepted: true, completedAt: typeof value.completedSongGift.completedAt === "string" ? value.completedSongGift.completedAt : null }
         : null,
+      songFingerprints: Array.isArray(value.songFingerprints)
+        ? [...new Set(value.songFingerprints.filter((fingerprint) => typeof fingerprint === "string" && SONG_FINGERPRINT_PATTERN.test(fingerprint)))].slice(0, 1000)
+        : [],
+      songFileFingerprints: Array.isArray(value.songFileFingerprints)
+        ? [...new Set(value.songFileFingerprints.filter((fingerprint) => typeof fingerprint === "string" && SONG_FINGERPRINT_PATTERN.test(fingerprint)))].slice(0, 1000)
+        : [],
     };
   } catch { return null; }
 }

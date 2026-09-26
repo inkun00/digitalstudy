@@ -17,8 +17,9 @@ import { SHOP_ITEMS, applyFantasyItem, awardHeartPoints, pointsForScoreIncrease,
 import { CLOUD_SESSION_EVENT, chatDirtyKey, chatStorageKey } from "@/lib/cloudState";
 import { renderSongPdf } from "@/lib/songPdf";
 import { downloadSongPdf, saveSongPdf } from "@/lib/songPdfStore";
-import { canReceiveSongGift, SONG_FORMAT_ERROR, SONG_GIFT_REFUSAL } from "@/lib/songGiftConfig";
+import { canReceiveSongGift, DuplicateSongError, SONG_DUPLICATE_ERROR, SONG_FORMAT_ERROR, SONG_GIFT_REFUSAL } from "@/lib/songGiftConfig";
 import { findCompletedSongGift } from "@/lib/endingStories";
+import { collectOtherVictimPdfFingerprints, collectOtherVictimSongFingerprints, getPdfContentFingerprint, SONG_FINGERPRINT_PATTERN } from "@/lib/songFingerprint";
 import { useCloudSession } from "@/components/CloudSyncProvider";
 
 const subscribeToMount = () => () => {};
@@ -33,6 +34,11 @@ function readSavedChat(scenarioId) {
     return saved && Array.isArray(saved.messages) && saved.messages.length <= 80 && saved.messages.every((message) =>
       ["user", "victim", "system"].includes(message.sender) && typeof message.text === "string" && message.text.length <= 2000) ? saved : null;
   } catch { return null; }
+}
+
+function readOtherSongChats(currentScenarioId) {
+  return Object.fromEntries(SCENARIOS.filter((scenario) => scenario.id !== currentScenarioId)
+    .map((scenario) => [scenario.id, readSavedChat(scenario.id)]));
 }
 
 function currentTime() {
@@ -70,6 +76,10 @@ export default function ChatPageClient({ initialScenarioId }) {
   const [savedSession] = useState(() => readSavedChat(scenarioId));
   const [messages, setMessages] = useState(() => savedSession?.messages || initialMessages(initialScenario));
   const [completedSongGift, setCompletedSongGift] = useState(() => findCompletedSongGift(savedSession));
+  const [songFingerprints, setSongFingerprints] = useState(() => Array.isArray(savedSession?.songFingerprints)
+    ? savedSession.songFingerprints.filter((value) => SONG_FINGERPRINT_PATTERN.test(value)) : []);
+  const [songFileFingerprints, setSongFileFingerprints] = useState(() => Array.isArray(savedSession?.songFileFingerprints)
+    ? savedSession.songFileFingerprints.filter((value) => SONG_FINGERPRINT_PATTERN.test(value)) : []);
   const [isTyping, setIsTyping] = useState(false);
   const [dialogueScore, setDialogueScore] = useState(() => Number.isFinite(savedSession?.dialogueScore) ? clampScore(savedSession.dialogueScore) : INITIAL_COMFORT);
   const itemBonus = wallet.scenarioBoosts[scenarioId] || 0;
@@ -90,6 +100,7 @@ export default function ChatPageClient({ initialScenarioId }) {
   const [isSendingSong, setIsSendingSong] = useState(false);
   const [songGiftError, setSongGiftError] = useState("");
   const [isSongFormatPopupOpen, setIsSongFormatPopupOpen] = useState(false);
+  const [isSongDuplicatePopupOpen, setIsSongDuplicatePopupOpen] = useState(false);
   const [inputValue, setInputValue] = useState(() => typeof savedSession?.inputValue === "string" ? savedSession.inputValue.slice(0, 2000) : "");
   const generation = useRef(0);
   const replyInFlight = useRef(false);
@@ -100,11 +111,11 @@ export default function ChatPageClient({ initialScenarioId }) {
   useEffect(() => {
     if (!isClient) return;
     try {
-      localStorage.setItem(chatStorageKey(scenarioId), JSON.stringify({ messages, dialogueScore, turnCount, coachData, inputValue, completedSongGift }));
+      localStorage.setItem(chatStorageKey(scenarioId), JSON.stringify({ messages, dialogueScore, turnCount, coachData, inputValue, completedSongGift, songFingerprints, songFileFingerprints }));
       localStorage.setItem(chatDirtyKey(scenarioId), "1");
       window.dispatchEvent(new CustomEvent(CLOUD_SESSION_EVENT, { detail: { scenarioId } }));
     } catch { /* Chat continues when session storage is unavailable. */ }
-  }, [isClient, scenarioId, messages, dialogueScore, turnCount, coachData, inputValue, completedSongGift]);
+  }, [isClient, scenarioId, messages, dialogueScore, turnCount, coachData, inputValue, completedSongGift, songFingerprints, songFileFingerprints]);
 
   const handleSelectScenario = (newId) => {
     generation.current += 1;
@@ -237,6 +248,7 @@ export default function ChatPageClient({ initialScenarioId }) {
     }
     setSongGiftError("");
     setIsSongFormatPopupOpen(false);
+    setIsSongDuplicatePopupOpen(false);
     setIsSongGiftModalOpen(true);
   };
 
@@ -257,10 +269,13 @@ export default function ChatPageClient({ initialScenarioId }) {
     setIsTyping(true);
     setSongGiftError("");
     try {
+      const fileFingerprint = await getPdfContentFingerprint(file);
+      if (collectOtherVictimPdfFingerprints(readOtherSongChats(scenarioId), scenarioId).includes(fileFingerprint)) throw new DuplicateSongError();
       const pages = await renderSongPdf(file);
+      const usedSongFingerprints = await collectOtherVictimSongFingerprints(readOtherSongChats(scenarioId), scenarioId);
       const response = await fetch("/api/song-gift", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ scenarioId, messages, userProfile, comfortScore, pages }),
+        body: JSON.stringify({ scenarioId, messages, userProfile, comfortScore, pages, usedSongFingerprints }),
       });
       if (!response.ok) {
         const failure = await response.json().catch(() => null);
@@ -270,6 +285,9 @@ export default function ChatPageClient({ initialScenarioId }) {
       }
       const song = await response.json();
       if (requestGeneration !== generation.current) return;
+      if (collectOtherVictimPdfFingerprints(readOtherSongChats(scenarioId), scenarioId).includes(fileFingerprint)) throw new DuplicateSongError();
+      const latestFingerprints = await collectOtherVictimSongFingerprints(readOtherSongChats(scenarioId), scenarioId);
+      if (latestFingerprints.includes(song.fingerprint)) throw new DuplicateSongError();
       const fileId = `song-${crypto.randomUUID()}`;
       await saveSongPdf({ uid: user.uid, fileId, scenarioId, file });
       if (requestGeneration !== generation.current) return;
@@ -277,13 +295,15 @@ export default function ChatPageClient({ initialScenarioId }) {
         id: `song-gift-${crypto.randomUUID()}`,
         sender: "system",
         text: `${currentScenario.name}에게 직접 만든 노래 '${song.title}'의 악보 PDF를 선물했어요.`,
-        songGift: { title: song.title, letter: song.letter, lyrics: song.lyrics, fileName: file.name, fileId, suitable: song.suitable === true },
+        songGift: { title: song.title, letter: song.letter, lyrics: song.lyrics, fingerprint: song.fingerprint, fileFingerprint, fileName: file.name, fileId, suitable: song.suitable === true },
         time: currentTime(),
       };
       const victimMessage = song.suitable && song.reply
         ? { id: `victim-${crypto.randomUUID()}`, sender: "victim", text: song.reply, time: currentTime(), unread: false }
         : null;
       setMessages((current) => [...current, giftMessage, ...(victimMessage ? [victimMessage] : [])].slice(-80));
+      setSongFingerprints((current) => current.includes(song.fingerprint) ? current : [...current, song.fingerprint]);
+      setSongFileFingerprints((current) => current.includes(fileFingerprint) ? current : [...current, fileFingerprint]);
       if (victimMessage) setCompletedSongGift({ title: song.title, accepted: true, completedAt: new Date().toISOString() });
       setIsSongGiftModalOpen(false);
       if (victimMessage) {
@@ -294,6 +314,9 @@ export default function ChatPageClient({ initialScenarioId }) {
         if (error.code === "INVALID_SONG_FORMAT") {
           setIsSongGiftModalOpen(false);
           setIsSongFormatPopupOpen(true);
+        } else if (error.code === "DUPLICATE_SONG_CONTENT") {
+          setIsSongGiftModalOpen(false);
+          setIsSongDuplicatePopupOpen(true);
         } else setSongGiftError(error.message);
       }
     } finally {
@@ -330,6 +353,7 @@ export default function ChatPageClient({ initialScenarioId }) {
         <ItemBagModal isOpen={isBagModalOpen} onClose={() => setIsBagModalOpen(false)} wallet={wallet} currentScenario={currentScenario} currentComfort={comfortScore} onGiftItem={handleGiftItem} onOpenShop={() => router.push("/shop")} notice={bagNotice} />
         {isSongGiftModalOpen && <SongGiftModal isOpen onClose={() => setIsSongGiftModalOpen(false)} onSend={handleSendSongGift} isSending={isSendingSong} error={songGiftError} currentScenario={currentScenario} />}
         {isSongFormatPopupOpen && <div className="modal-overlay" role="presentation"><div className="modal-box song-format-popup" role="alertdialog" aria-modal="true" aria-labelledby="song-format-title" aria-describedby="song-format-description"><div className="song-format-popup-icon" aria-hidden="true">📄</div><h3 id="song-format-title">양식에 맞지 않는 파일이에요</h3><p id="song-format-description">{SONG_FORMAT_ERROR}</p><button type="button" onClick={() => setIsSongFormatPopupOpen(false)}>확인</button></div></div>}
+        {isSongDuplicatePopupOpen && <div className="modal-overlay" role="presentation"><div className="modal-box song-format-popup" role="alertdialog" aria-modal="true" aria-labelledby="song-duplicate-title" aria-describedby="song-duplicate-description"><div className="song-format-popup-icon" aria-hidden="true">🎵</div><h3 id="song-duplicate-title">이미 선물한 노래예요</h3><p id="song-duplicate-description">{SONG_DUPLICATE_ERROR}</p><button type="button" onClick={() => setIsSongDuplicatePopupOpen(false)}>확인</button></div></div>}
       </section>
       <AssistantDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} coachData={coachData} isLoadingCoach={isTyping} onSelectSuggestedReply={setInputValue} currentScenario={currentScenario} />
     </main>

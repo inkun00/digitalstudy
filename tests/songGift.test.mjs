@@ -6,6 +6,7 @@ import { ENDING_STORIES, findCompletedSongGift } from "../src/lib/endingStories.
 import { buildClovaMessages } from "../src/lib/clovaChat.js";
 import { canReceiveSongGift, SONG_GIFT_REFUSAL } from "../src/lib/songGiftConfig.js";
 import { buildSongScoreMessages, generateSongGiftReply, parseSongScore, parseSongSuitability } from "../src/lib/songGift.js";
+import { collectOtherVictimPdfFingerprints, collectOtherVictimSongFingerprints, getPdfContentFingerprint, getSongFingerprint, normalizeSongLyrics } from "../src/lib/songFingerprint.js";
 
 test("노래 선물은 안정도 70점부터 가능하다", () => {
   assert.equal(canReceiveSongGift(69), false);
@@ -27,6 +28,42 @@ test("표준 양식만 받아들이고 악보의 제목, 편지, 가사를 분�
   });
   assert.throws(() => parseSongScore("<양식>부적합</양식>"), { code: "INVALID_SONG_FORMAT", status: 422 });
   assert.throws(() => parseSongScore("<양식>적합</양식><제목>제목<편지><가사>"), { status: 422 });
+  assert.throws(() => parseSongScore("<양식>적합</양식><제목>제목<편지>고마워<가사>"), { status: 422 });
+});
+
+test("파일명·노래 제목·편지와 무관하게 가사 내용으로 같은 노래를 판별한다", async () => {
+  assert.equal(normalizeSongLyrics("1마디: 네 이야기를 들어 줄게\n2마디: 함께 걸어가자"), normalizeSongLyrics("네 이야기를 들어줄게, 함께 걸어가자!"));
+  const fingerprint = await getSongFingerprint("네 이야기를 들어줄게, 함께 걸어가자!");
+  assert.equal(fingerprint, await getSongFingerprint("네 이야기를 들어 줄게\n함께 걸어가자"));
+  assert.notEqual(fingerprint, await getSongFingerprint("네 이야기를 들어줄게, 혼자 걸어가자"));
+  const chats = {
+    [SCENARIOS[0].id]: { messages: [{ sender: "system", songGift: { title: "옛 노래", fileName: "첫파일.pdf", lyrics: "네 이야기를 들어 줄게 함께 걸어가자" } }] },
+    [SCENARIOS[1].id]: { messages: [] },
+  };
+  assert.deepEqual(await collectOtherVictimSongFingerprints(chats, SCENARIOS[1].id), [fingerprint]);
+  assert.deepEqual(await collectOtherVictimSongFingerprints(chats, SCENARIOS[0].id), []);
+  chats[SCENARIOS[0].id] = { messages: [], songFingerprints: [fingerprint] };
+  assert.deepEqual(await collectOtherVictimSongFingerprints(chats, SCENARIOS[1].id), [fingerprint]);
+  const firstFile = { name: "첫파일.pdf", arrayBuffer: async () => new TextEncoder().encode("same PDF bytes").buffer };
+  const renamedFile = { name: "다른이름.pdf", arrayBuffer: firstFile.arrayBuffer };
+  const fileFingerprint = await getPdfContentFingerprint(firstFile);
+  assert.equal(fileFingerprint, await getPdfContentFingerprint(renamedFile));
+  chats[SCENARIOS[0].id].songFileFingerprints = [fileFingerprint];
+  assert.deepEqual(collectOtherVictimPdfFingerprints(chats, SCENARIOS[1].id), [fileFingerprint]);
+});
+
+test("다른 피해자에게 같은 가사의 악보를 선물하려 하면 답장 생성 전에 중단한다", async () => {
+  const fingerprint = await getSongFingerprint("내가 곁에 있을게");
+  let calls = 0;
+  await assert.rejects(generateSongGiftReply({
+    scenario: SCENARIOS[1], messages: [], counselor: { name: "학생", age: 12, gender: "undisclosed" },
+    pages: ["abc"], usedSongFingerprints: [fingerprint], apiKey: "test-key",
+    fetchImpl: async () => {
+      calls += 1;
+      return { ok: true, json: async () => ({ result: { message: { content: "<양식>적합</양식><제목>다른 제목<편지>다른 편지<가사>내가 곁에 있을게" } } }) };
+    },
+  }), { code: "DUPLICATE_SONG_CONTENT", status: 409 });
+  assert.equal(calls, 1);
 });
 
 test("위로·예방·대처 가사만 반응한다", () => {

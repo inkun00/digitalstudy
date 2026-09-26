@@ -1,7 +1,8 @@
 import { SCENARIO_GUIDANCE } from "./scenarioGuidance.js";
 import { GENDER_LABELS } from "./userProfile.js";
 import { ClovaChatError } from "./clovaChat.js";
-import { SongFormatError } from "./songGiftConfig.js";
+import { DuplicateSongError, SongFormatError } from "./songGiftConfig.js";
+import { getSongFingerprint } from "./songFingerprint.js";
 
 const CLOVA_ENDPOINT = "https://clovastudio.stream.ntruss.com/v3/chat-completions/HCX-005";
 
@@ -32,7 +33,7 @@ export function parseSongScore(content) {
   const title = clean(sections[1], 100) || "제목 없는 노래";
   const letter = clean(sections[2], 800);
   const lyrics = clean(sections[3], 1200);
-  if (!letter && !lyrics) throw new ClovaChatError("악보에서 편지나 가사를 확인하지 못했어요. 글자가 보이는 PDF를 올려 주세요.", 422);
+  if (!lyrics) throw new ClovaChatError("악보에서 가사를 확인하지 못했어요. 글자가 보이는 PDF를 올려 주세요.", 422);
   return { title, letter, lyrics };
 }
 
@@ -103,12 +104,15 @@ async function requestClovaText(messages, apiKey, fetchImpl, maxTokens, temperat
   return content.trim();
 }
 
-export async function generateSongGiftReply({ scenario, messages, counselor, pages, apiKey, fetchImpl = fetch }) {
+export async function generateSongGiftReply({ scenario, messages, counselor, pages, usedSongFingerprints = [], apiKey, fetchImpl = fetch }) {
   if (!apiKey?.trim()) throw new ClovaChatError("하이퍼클로바X API 키가 설정되지 않았습니다.", 503);
   const transcription = await requestClovaText(buildSongScoreMessages(pages), apiKey, fetchImpl, 2400, 0);
   const song = parseSongScore(transcription);
+  const fingerprint = await getSongFingerprint(song.lyrics);
+  if (!fingerprint) throw new ClovaChatError("악보에서 가사를 확인하지 못했어요. 글자가 보이는 PDF를 올려 주세요.", 422);
+  if (usedSongFingerprints.includes(fingerprint)) throw new DuplicateSongError();
   const suitability = await requestClovaText(buildSongSuitabilityMessages(song), apiKey, fetchImpl, 40, 0);
-  if (!parseSongSuitability(suitability)) return { ...song, suitable: false, reply: null };
+  if (!parseSongSuitability(suitability)) return { ...song, fingerprint, suitable: false, reply: null };
   const reply = (await requestClovaText(buildSongReplyMessages({ scenario, messages, counselor, song }), apiKey, fetchImpl, 160, 0.3)).slice(0, 500);
-  return { ...song, suitable: true, reply };
+  return { ...song, fingerprint, suitable: true, reply };
 }
