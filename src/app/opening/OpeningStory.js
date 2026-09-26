@@ -10,101 +10,101 @@ import { getStoredProfile } from "@/lib/userProfile";
 const TALE_CHAPTERS = [
   {
     friend: "yeeun",
-    title: "예은이의 멈춘 춤",
-    lead: "첫 번째 불빛은 예은이의 방에서 켜졌어. 어제까지만 해도 이 방에는 신나는 춤 음악이 흘렀지.",
-    story: "예은이가 좋아하는 춤 영상을 올리자 모르는 사람들이 얼굴과 몸을 놀리는 댓글을 남겼어. 예은이는 연습화를 벗은 채 휴대전화만 바라보고 있었어.",
-    message: "내가 좋아하는 걸 올린 것뿐인데… 이제 춤추는 게 무서워.",
-    ending: "너는 예은이가 다시 좋아하는 춤을 떠올릴 수 있도록, 먼저 아픈 마음부터 들어 주고 싶어졌어.",
+    title: "예은이가 춤추기 무서워졌어",
+    lead: "예은이는 춤 연습 영상을 인터넷에 올렸어.",
+    story: "그런데 모르는 사람들이 예은이의 얼굴과 몸을 놀리는 댓글을 썼어. 예은이는 좋아하던 춤도 추기 싫어졌어.",
+    message: "춤 영상을 올렸을 뿐인데 사람들이 나를 놀려. 너무 속상해.",
+    ending: "너는 예은이의 잘못이 아니라고 말해 주고, 속상한 마음을 들어 주기로 했어.",
     image: "/opening/friend-yeeun.webp",
     alt: "춤 영상에 달린 상처 주는 댓글을 보고 슬퍼하는 예은",
   },
   {
     friend: "haeun",
-    title: "하은이에게 붙은 거짓 이름표",
-    lead: "두 번째 불빛은 학교 복도에서 켜졌어. 하은이는 평소처럼 걸었지만, 친구들의 시선이 낯설게 느껴졌어.",
-    story: "익명 게시판에 하은이가 친구의 돈을 훔쳤다는 거짓 글이 올라온 거야. 아무리 아니라고 말해도 소문은 더 빨리 퍼졌어.",
-    message: "나 정말 그런 적 없어. 아무도 내 말을 믿어 주지 않을까 봐 겁나.",
-    ending: "너는 하은이의 말부터 믿고 들어 주기로 했어. 거짓 소문 때문에 혼자 싸우게 두고 싶지 않았거든.",
+    title: "하은이는 거짓 소문 때문에 힘들어",
+    lead: "하은이는 학교 게시판에서 자기 이름을 봤어.",
+    story: "누군가 하은이가 친구의 돈을 훔쳤다는 거짓 글을 올렸어. 하은이는 훔치지 않았지만 친구들이 의심하기 시작했어.",
+    message: "나 돈을 훔치지 않았어. 친구들이 나를 믿어 줄까?",
+    ending: "너는 하은이의 말을 먼저 듣고, 믿을 만한 어른에게 사실을 알릴 수 있도록 돕기로 했어.",
     image: "/opening/friend-haeun.webp",
     alt: "거짓 소문을 보고 억울해하는 하은",
   },
   {
     friend: "minji",
-    title: "민지의 빈 채팅방",
-    lead: "세 번째 불빛을 열자 민지의 단체 채팅방이 보였어. 얼마 전까지만 해도 메시지가 끊이지 않던 곳이었지.",
-    story: "모둠 발표 뒤 친구들이 민지를 단체로 비웃었어. 그러고는 민지만 남겨 둔 채 새 대화방을 만들었지. 민지는 내일 학교에 가는 일이 두려워졌어.",
-    message: "내가 없는 방에서 다들 웃고 있을까 봐 무서워.",
-    ending: "너는 민지가 채팅방에서 혼자 남겨졌어도, 마음까지 혼자 두지는 않겠다고 생각했어.",
+    title: "민지만 단체 채팅방에서 빠졌어",
+    lead: "모둠 발표 뒤 친구들이 단체 채팅방에서 민지를 놀렸어.",
+    story: "그 뒤 친구들은 민지만 빼고 새 채팅방을 만들었어. 민지는 내일 학교에 가기가 무서워졌어.",
+    message: "친구들이 나만 빼고 이야기해. 학교에 가면 또 놀릴까 봐 무서워.",
+    ending: "너는 민지가 혼자라고 느끼지 않도록 이야기를 들어 주기로 했어.",
     image: "/opening/friend-minji.webp",
     alt: "조용해진 단체 대화방을 보며 외로워하는 민지",
   },
   {
     friend: "jiho",
-    title: "지호를 따라오는 그림자",
-    lead: "네 번째 불빛은 지호가 좋아하던 게임 화면에서 반짝였어. 하지만 지호는 접속 버튼을 누르지 못했어.",
-    story: "낯선 아바타들이 며칠째 지호를 따라다니며 길을 막고 무서운 말을 보냈어. 게임을 꺼도 그 장면이 떠올라 가슴이 두근거렸지.",
-    message: "다시 들어가면 또 따라올까 봐 무서워. 어떻게 해야 해?",
-    ending: "너는 지호가 안전한 곳에서 숨을 고르고, 믿을 만한 어른에게 함께 이야기할 수 있기를 바랐어.",
+    title: "게임에서 지호를 계속 괴롭혀",
+    lead: "지호는 친구들과 게임하는 걸 좋아했어.",
+    story: "그런데 모르는 게임 캐릭터들이 지호를 따라다니며 길을 막았어. 무서운 말도 계속 보냈어.",
+    message: "게임에 들어가면 또 따라올까 봐 무서워. 어떻게 해야 해?",
+    ending: "너는 지호의 무서운 마음을 듣고, 어른에게 함께 도움을 청하기로 했어.",
     image: "/opening/friend-jiho.webp",
     alt: "게임 속 괴롭힘을 겪고 두려워하는 지호",
   },
   {
     friend: "junwoo",
-    title: "준우의 빛나는 아이템",
-    lead: "다섯 번째 불빛에는 준우가 몇 달 동안 모아 얻은 게임 아이템이 빛나고 있었어.",
-    story: "그런데 다른 아이들이 아이템을 내놓지 않으면 학교에서 가만두지 않겠다고 했어. 준우는 그 말을 읽고도 누구에게 털어놓아야 할지 몰랐지.",
-    message: "그냥 주면 괴롭힘이 끝날까? 내일이 너무 무서워.",
-    ending: "너는 준우가 혼자 결정하거나 협박을 견디지 않도록, 곁에서 도움을 찾고 싶어졌어.",
+    title: "준우에게 게임 아이템을 달라고 했어",
+    lead: "준우는 몇 달 동안 게임을 해서 소중한 아이템을 얻었어.",
+    story: "다른 아이들이 그 아이템을 달라고 했어. 주지 않으면 학교에서 괴롭히겠다고 겁줬어.",
+    message: "아이템을 주면 괴롭히지 않을까? 내일 학교 가기가 무서워.",
+    ending: "너는 준우가 혼자 겁내지 않도록 이야기를 듣고, 어른의 도움을 찾기로 했어.",
     image: "/opening/friend-junwoo.webp",
     alt: "게임 아이템을 내놓으라는 협박을 받고 걱정하는 준우",
   },
   {
     friend: "sua",
-    title: "수아가 숨기고 싶은 사진",
-    lead: "여섯 번째 불빛이 켜지자 수아는 휴대전화를 가슴에 꼭 안았어.",
-    story: "예전에 친한 친구에게 보낸 우스운 표정 사진을 누군가 퍼뜨리겠다고 했어. 숙제를 대신해 주지 않으면 학교 단체방에 올리겠다며 수아를 겁주었지.",
-    message: "그 사진이 퍼지면 어떡하지? 시키는 대로 해야 할까?",
-    ending: "너는 수아가 부끄러워할 일이 아니라는 말을 전하고 싶었어. 사진을 이용해 겁준 사람이 잘못한 거니까.",
+    title: "사진으로 수아를 겁줬어",
+    lead: "수아는 예전에 친구에게 우스운 표정 사진을 보냈어.",
+    story: "그런데 누군가 숙제를 대신해 주지 않으면 사진을 학교 단체 채팅방에 올리겠다고 했어. 수아는 그 말이 무서웠어.",
+    message: "내 사진이 퍼지면 어떡하지? 시키는 대로 해야 할까?",
+    ending: "너는 수아의 잘못이 아니라고 말해 주기로 했어. 사진으로 겁준 사람이 잘못한 거야.",
     image: "/opening/friend-sua.webp",
     alt: "사진을 퍼뜨리겠다는 협박에 불안해하는 수아",
   },
   {
     friend: "doyoon",
-    title: "도윤이의 흩어진 일기장",
-    lead: "일곱 번째 불빛 아래, 도윤이가 혼자 간직하던 일기의 문장이 낯선 곳으로 흩어졌어.",
-    story: "누군가 도윤이의 계정에 들어가 비공개 일기와 가족 사진을 퍼뜨렸어. 도윤이 이름으로 심한 말까지 보내서 친구들은 도윤이를 오해하고 있었지.",
-    message: "그건 내가 보낸 말이 아니야. 내 비밀도 어떻게 되돌려야 할지 모르겠어.",
-    ending: "너는 도윤이의 억울함을 먼저 듣고, 안전하게 계정을 지킬 방법을 함께 찾아야겠다고 생각했어.",
+    title: "도윤이의 계정에 누가 몰래 들어왔어",
+    lead: "도윤이는 자기만 볼 수 있는 일기와 가족 사진을 인터넷 계정에 보관했어.",
+    story: "누군가 그 계정에 몰래 들어와 일기와 사진을 퍼뜨렸어. 도윤이 이름으로 친구들에게 나쁜 말도 보냈어.",
+    message: "그 말은 내가 보낸 게 아니야. 내 일기와 사진까지 퍼졌어.",
+    ending: "너는 도윤이의 말을 듣고, 계정을 다시 안전하게 지킬 방법을 함께 찾기로 했어.",
     image: "/opening/friend-doyoon.webp",
     alt: "계정 도용으로 일기와 가족 사진이 퍼져 당황한 도윤",
   },
   {
     friend: "seoyeon",
-    title: "서연이의 낯선 사진",
-    lead: "여덟 번째 불빛을 누르자 서연이는 자기 얼굴이 담긴 낯선 사진을 발견했어.",
-    story: "누군가 서연이의 사진을 마음대로 바꾸어 학교 익명 계정에 올렸어. 친구들은 장난이라고 웃었지만, 서연이는 내일 학교에 가기가 두려웠지.",
-    message: "이건 진짜 내 모습이 아닌데… 다들 나를 이상하게 볼까 봐 무서워.",
-    ending: "너는 서연이 탓이 아니라고 말해 주고 싶었어. 퍼진 사진을 멈출 수 있도록 어른의 도움도 함께 찾아야 했어.",
+    title: "누군가 서연이 사진을 마음대로 바꿨어",
+    lead: "서연이는 인터넷에서 자기 얼굴이 들어간 이상한 사진을 봤어.",
+    story: "누군가 서연이의 사진을 마음대로 바꿔서 올렸어. 친구들은 장난이라고 웃었지만 서연이는 학교에 가기가 무서웠어.",
+    message: "이 사진은 진짜 내 모습이 아니야. 사람들이 나를 이상하게 볼까 봐 무서워.",
+    ending: "너는 서연이의 잘못이 아니라고 말해 주고, 어른에게 함께 도움을 청하기로 했어.",
     image: "/opening/friend-seoyeon.webp",
     alt: "허락 없이 바뀌어 퍼진 사진을 보고 걱정하는 서연",
   },
   {
     friend: "siwoo",
-    title: "시우의 빨간 데이터 표시",
-    lead: "아홉 번째 불빛에는 시우의 휴대전화 데이터가 거의 남지 않았다는 표시가 떠 있었어.",
-    story: "형들이 날마다 시우에게 핫스팟을 켜 달라고 강요했어. 거절하면 때리겠다고 해서 시우는 데이터가 다 없어질 때까지 아무 말도 못 했지.",
+    title: "시우에게 휴대전화 인터넷을 나눠 달라고 강요했어",
+    lead: "형들이 시우에게 휴대전화 인터넷을 나눠 쓰자고 했어.",
+    story: "시우가 싫다고 해도 매일 핫스팟을 켜게 했어. 거절하면 때리겠다고 겁줘서 시우의 인터넷 데이터가 거의 다 떨어졌어.",
     message: "이제 데이터도 없는데 또 켜 달라고 하면 어떡해?",
-    ending: "너는 시우가 두려운 일을 혼자 감당하지 않도록, 믿을 만한 어른에게 바로 알리는 길을 떠올렸어.",
+    ending: "너는 시우가 혼자 겁내지 않도록, 믿을 만한 어른에게 바로 알리기로 했어.",
     image: "/opening/friend-siwoo.webp",
     alt: "강제로 핫스팟을 켜 주다 데이터가 떨어져 걱정하는 시우",
   },
   {
     friend: "hyunwoo",
-    title: "현우의 이름이 적힌 투표",
-    lead: "마지막 불빛을 열자 현우의 이름이 적힌 익명 투표가 화면에 떠 있었어.",
-    story: "누군가 '우리 반에서 제일 별로인 아이'를 고르는 투표에 현우를 올렸어. 투표 화면은 친구들 사이로 퍼졌고, 현우는 복도에서도 웃음소리가 자신을 향하는 것 같았지.",
-    message: "사람들이 내 이름을 누르며 웃었어. 아무도 말리지 않았어.",
-    ending: "너는 현우가 느낀 외로움을 지나치지 않기로 했어. 한 사람의 편이 되어 주는 것부터 시작할 수 있으니까.",
+    title: "현우를 놀리는 투표가 올라왔어",
+    lead: "현우는 학교 단체 채팅방에서 자기 이름이 나온 투표를 봤어.",
+    story: "누군가 '우리 반에서 제일 별로인 아이'를 고르는 투표에 현우를 올렸어. 친구들이 투표를 퍼뜨리고 현우를 비웃었어.",
+    message: "친구들이 내 이름을 누르며 웃었어. 아무도 말리지 않았어.",
+    ending: "너는 현우가 외롭지 않도록, 먼저 현우의 이야기를 들어 주기로 했어.",
     image: "/opening/friend-hyunwoo.webp",
     alt: "모욕적인 익명 투표에 이름이 올라 상처받은 현우",
   },
@@ -186,12 +186,12 @@ export default function OpeningStory({ replay = false }) {
 
       <div className="opening-story" ref={storyRef} key={page}>
         {page === 0 && <section className="opening-chapter opening-intro" aria-labelledby="opening-title">
-          <span className="opening-kicker">프롤로그 · 열 개의 작은 불빛</span>
-          <h1 id="opening-title">{name},<br />오늘 밤 네게 온 이야기</h1>
-          <p className="opening-lead">어느 조용한 저녁, 휴대전화에 작은 불빛 하나가 켜졌어. 곧 두 개, 세 개… 모두 열 개의 메시지가 너를 기다리고 있었지.</p>
+          <span className="opening-kicker">시작 · 친구 10명이 보낸 메시지</span>
+          <h1 id="opening-title">{name},<br />친구들이 너에게 연락했어</h1>
+          <p className="opening-lead">어느 날 저녁, 네 휴대전화에 친구 10명의 메시지가 왔어. 친구들은 인터넷에서 힘든 일을 겪고 있었어.</p>
           <OpeningScene page={page} />
-          <div className="opening-notification"><span className="opening-notification-icon">💬</span><div><strong>친구들의 채팅방</strong><p>“잠깐… 내 이야기 들어줄 수 있어?”</p></div><span className="opening-notification-badge">10</span></div>
-          <p className="opening-tale-afterword">그 불빛들은 모두 네 친구에게서 온 거야. 너는 첫 번째 메시지를 조심스럽게 열었어.</p>
+          <div className="opening-notification"><span className="opening-notification-icon">💬</span><div><strong>친구들의 메시지</strong><p>“내 이야기 좀 들어줄래?”</p></div><span className="opening-notification-badge">10</span></div>
+          <p className="opening-tale-afterword">너는 첫 번째 친구의 메시지를 열어 봤어.</p>
         </section>}
 
         {currentChapter && <section className="opening-chapter opening-tale" aria-labelledby="opening-title">
@@ -210,38 +210,38 @@ export default function OpeningStory({ replay = false }) {
         </section>}
 
         {page === friendsPage && <section className="opening-chapter opening-friends" aria-labelledby="opening-title">
-          <span className="opening-kicker">열 개의 이야기를 읽고 나서</span>
-          <h1 id="opening-title">열 개의 불빛,<br />열 명의 친구</h1>
-          <p className="opening-lead">이제 너는 열 명의 친구에게 무슨 일이 있었는지 알게 됐어. 겪은 일은 달라도, 모두 자기 이야기를 들어 줄 사람을 기다리고 있었지.</p>
+          <span className="opening-kicker">친구 10명의 이야기를 모두 읽었어</span>
+          <h1 id="opening-title">이제 친구들이<br />왜 힘든지 알게 됐어</h1>
+          <p className="opening-lead">친구들은 서로 다른 일을 겪었어. 하지만 모두 자기 이야기를 들어 줄 사람을 기다리고 있어.</p>
           <OpeningScene page={page} />
           <div className="opening-friend-grid">{SCENARIOS.map((scenario) => <div className="opening-friend" key={scenario.id}>
             <Image src={scenario.avatar} alt="" width={54} height={54} sizes="54px" /><span>{scenario.name}</span>
           </div>)}</div>
-          <div className="opening-chat-preview"><span>읽지 않은 메시지</span><p>“지금 이야기해도 될까? 나 혼자서는 너무 힘들어…”</p></div>
+          <div className="opening-chat-preview"><span>친구의 메시지</span><p>“지금 내 이야기 들어줄 수 있어?”</p></div>
         </section>}
 
         {page === missionPage && <section className="opening-chapter opening-mission" aria-labelledby="opening-title">
-          <span className="opening-kicker">다음 장 · 먼저 건네는 말</span>
-          <h1 id="opening-title">“응, 내가<br />듣고 있을게.”</h1>
-          <p className="opening-lead">너는 가장 먼저 도착한 메시지에 답장을 썼어. 멋진 해결책 대신, 친구가 안심하고 이야기를 꺼낼 수 있는 한마디였지.</p>
+          <span className="opening-kicker">이제 친구와 이야기해 봐</span>
+          <h1 id="opening-title">먼저 친구의<br />말을 들어 줘</h1>
+          <p className="opening-lead">친구가 메시지를 보내면 무슨 일이 있었는지 물어봐. 친구가 자기 마음을 말할 때까지 천천히 들어 줘.</p>
           <OpeningScene page={page} />
           <div className="opening-chat-scene">
             <div className="opening-chat-row"><Image src={SCENARIOS[0].avatar} alt="" width={42} height={42} sizes="42px" /><p>“내 얘기를 들어줄 수 있어?”</p></div>
             <div className="opening-chat-row opening-chat-row-self"><p>“응, 천천히 말해줘. 내가 듣고 있을게.”</p></div>
             <div className="opening-chat-row"><Image src={SCENARIOS[0].avatar} alt="" width={42} height={42} sizes="42px" /><p>“고마워. 조금 안심이 돼.”</p></div>
           </div>
-          <div className="opening-mission-foot"><span aria-hidden="true">♥</span><div><strong>작은 답장이 만든 변화</strong><p>친구의 마음이 조금 놓였어. 따뜻한 대화가 쌓이면 회복의 하트도 하나씩 모일 거야.</p></div></div>
+          <div className="opening-mission-foot"><span aria-hidden="true">♥</span><div><strong>친구가 조금 안심했어</strong><p>친구에게 도움이 되는 말을 하면 마음 안정도가 오르고 하트 포인트도 모을 수 있어.</p></div></div>
         </section>}
 
         {page === songPage && <section className="opening-chapter opening-song" aria-labelledby="opening-title">
-          <span className="opening-kicker">마지막 장 · 마음을 담은 노래</span>
-          <h1 id="opening-title">친구의 내일에<br />노래 한 곡을 선물해.</h1>
-          <p className="opening-lead">너는 친구들이 들려준 말을 오래 기억했어. 충분히 이야기 나누어 마음이 가까워진 뒤, 그 마음을 담은 노래를 직접 만들어 건네기로 했지.</p>
+          <span className="opening-kicker">마지막 · 친구를 위한 노래</span>
+          <h1 id="opening-title">친구를 위해<br />노래를 만들어 줘</h1>
+          <p className="opening-lead">친구와 충분히 이야기해서 친구가 안심하기 시작하면, 마음을 위로하는 노래를 직접 만들어 선물해 봐.</p>
           <OpeningScene page={page} />
-          <div className="opening-song-card"><span className="opening-song-note" aria-hidden="true">♫</span><div><small>네가 직접 만드는 선물</small><strong>친구를 위한 노래</strong><p>친구의 이야기를 떠올리며 위로와 희망을 가사에 담고, 완성한 노래를 선물해 봐.</p></div></div>
-          <div className="opening-goal"><span className="opening-goal-icon">✦</span><div><strong>이 이야기의 끝에서</strong><p>네 대화와 노래가 친구의 마음에 작은 빛이 되어, 친구가 다시 일상으로 한 걸음 나아가길 바라.</p></div></div>
+          <div className="opening-song-card"><span className="opening-song-note" aria-hidden="true">♫</span><div><small>네가 직접 만드는 선물</small><strong>친구를 위한 노래</strong><p>친구에게 힘이 되는 말을 가사에 담아. 노래를 완성하면 친구에게 선물해 봐.</p></div></div>
+          <div className="opening-goal"><span className="opening-goal-icon">✦</span><div><strong>이 게임의 목표</strong><p>친구의 이야기를 듣고 노래를 선물해서, 친구가 다시 조금씩 편안하게 지낼 수 있도록 도와줘.</p></div></div>
           <div className="opening-final-avatars" aria-hidden="true">{SCENARIOS.slice(0, 5).map((scenario) => <Image key={scenario.id} src={scenario.avatar} alt="" width={38} height={38} sizes="38px" />)}</div>
-          <p className="opening-final-line">이제, 네가 이어 쓸 이야기를 시작할 시간이야.</p>
+          <p className="opening-final-line">이제 친구의 첫 메시지를 열어 봐!</p>
         </section>}
       </div>
 
