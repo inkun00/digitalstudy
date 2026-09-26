@@ -103,14 +103,12 @@ export default function ChatPageClient({ initialScenarioId }) {
   const [songGiftError, setSongGiftError] = useState("");
   const [isSongFormatPopupOpen, setIsSongFormatPopupOpen] = useState(false);
   const [isSongDuplicatePopupOpen, setIsSongDuplicatePopupOpen] = useState(false);
+  const [isRecoveryPopupOpen, setIsRecoveryPopupOpen] = useState(false);
   const [inputValue, setInputValue] = useState(() => typeof savedSession?.inputValue === "string" ? savedSession.inputValue.slice(0, 2000) : "");
   const generation = useRef(0);
   const replyInFlight = useRef(false);
-  const endingTimer = useRef(null);
   const latestVictimMessage = [...messages].reverse().find((message) => message.sender === "victim");
   const currentCoaching = coaching?.forMessageId === latestVictimMessage?.id ? coaching : null;
-
-  useEffect(() => () => clearTimeout(endingTimer.current), []);
 
   useEffect(() => {
     if (!isClient || !isDrawerOpen || isTyping || !latestVictimMessage || currentCoaching) return;
@@ -332,11 +330,11 @@ export default function ChatPageClient({ initialScenarioId }) {
       setMessages((current) => [...current, giftMessage, ...(victimMessage ? [victimMessage] : [])].slice(-80));
       setSongFingerprints((current) => current.includes(song.fingerprint) ? current : [...current, song.fingerprint]);
       setSongFileFingerprints((current) => current.includes(fileFingerprint) ? current : [...current, fileFingerprint]);
-      if (victimMessage) setCompletedSongGift({ title: song.title, accepted: true, completedAt: new Date().toISOString() });
-      setIsSongGiftModalOpen(false);
       if (victimMessage) {
-        endingTimer.current = setTimeout(() => router.push(`/ending?scenario=${encodeURIComponent(scenarioId)}`), 4000);
+        setCompletedSongGift({ title: song.title, accepted: true, completedAt: new Date().toISOString() });
+        setIsRecoveryPopupOpen(true);
       }
+      setIsSongGiftModalOpen(false);
     } catch (error) {
       if (requestGeneration === generation.current) {
         if (error.code === "INVALID_SONG_FORMAT") {
@@ -364,6 +362,17 @@ export default function ChatPageClient({ initialScenarioId }) {
     }
   };
 
+  const handleConfirmRecovery = () => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(chatStorageKey(scenarioId)) || "{}");
+      localStorage.setItem(chatStorageKey(scenarioId), JSON.stringify({ ...saved, messages, completedSongGift }));
+      localStorage.setItem(chatDirtyKey(scenarioId), "1");
+      window.dispatchEvent(new CustomEvent(CLOUD_SESSION_EVENT, { detail: { scenarioId } }));
+    } catch { /* The normal chat save effect also persists this result. */ }
+    setIsRecoveryPopupOpen(false);
+    router.push(`/ending?scenario=${encodeURIComponent(scenarioId)}`);
+  };
+
   const pendingGiftReply = messages.at(-1)?.sender === "system" && messages.at(-1)?.giftItemId;
 
   if (!isClient) return null;
@@ -382,6 +391,7 @@ export default function ChatPageClient({ initialScenarioId }) {
         {isSongGiftModalOpen && <SongGiftModal isOpen onClose={() => setIsSongGiftModalOpen(false)} onSend={handleSendSongGift} isSending={isSendingSong} error={songGiftError} currentScenario={currentScenario} />}
         {isSongFormatPopupOpen && <div className="modal-overlay" role="presentation"><div className="modal-box song-format-popup" role="alertdialog" aria-modal="true" aria-labelledby="song-format-title" aria-describedby="song-format-description"><div className="song-format-popup-icon" aria-hidden="true">📄</div><h3 id="song-format-title">양식에 맞지 않는 파일이에요</h3><p id="song-format-description">{SONG_FORMAT_ERROR}</p><button type="button" onClick={() => setIsSongFormatPopupOpen(false)}>확인</button></div></div>}
         {isSongDuplicatePopupOpen && <div className="modal-overlay" role="presentation"><div className="modal-box song-format-popup" role="alertdialog" aria-modal="true" aria-labelledby="song-duplicate-title" aria-describedby="song-duplicate-description"><div className="song-format-popup-icon" aria-hidden="true">🎵</div><h3 id="song-duplicate-title">이미 선물한 노래예요</h3><p id="song-duplicate-description">{SONG_DUPLICATE_ERROR}</p><button type="button" onClick={() => setIsSongDuplicatePopupOpen(false)}>확인</button></div></div>}
+        {isRecoveryPopupOpen && <div className="modal-overlay" role="presentation"><div className="modal-box song-format-popup recovery-popup" role="alertdialog" aria-modal="true" aria-labelledby="recovery-popup-title" aria-describedby="recovery-popup-description"><div className="song-format-popup-icon" aria-hidden="true">💛</div><h3 id="recovery-popup-title">{currentScenario.name}의 마음이 회복되었어요</h3><p id="recovery-popup-description">따뜻한 대화와 노래 선물이 {currentScenario.name}에게 큰 힘이 되었어요. 엔딩에서 달라진 일상을 확인해 보세요.</p><button type="button" autoFocus onClick={handleConfirmRecovery}>확인</button></div></div>}
       </section>
       <AssistantDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} coachData={coachData} isLoadingCoach={isTyping} coaching={currentCoaching} isLoadingCoaching={isLoadingCoaching} coachingError={coachingError} onRetryCoaching={() => setCoachingRetry((value) => value + 1)} onSelectSuggestedReply={setInputValue} currentScenario={currentScenario} />
     </main>
