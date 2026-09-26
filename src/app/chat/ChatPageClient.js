@@ -18,6 +18,7 @@ import { CLOUD_SESSION_EVENT, chatDirtyKey, chatStorageKey } from "@/lib/cloudSt
 import { renderSongPdf } from "@/lib/songPdf";
 import { downloadSongPdf, saveSongPdf } from "@/lib/songPdfStore";
 import { canReceiveSongGift, SONG_FORMAT_ERROR, SONG_GIFT_REFUSAL } from "@/lib/songGiftConfig";
+import { findCompletedSongGift } from "@/lib/endingStories";
 import { useCloudSession } from "@/components/CloudSyncProvider";
 
 const subscribeToMount = () => () => {};
@@ -68,6 +69,7 @@ export default function ChatPageClient({ initialScenarioId }) {
   const isClient = useSyncExternalStore(subscribeToMount, getClientSnapshot, getServerSnapshot);
   const [savedSession] = useState(() => readSavedChat(scenarioId));
   const [messages, setMessages] = useState(() => savedSession?.messages || initialMessages(initialScenario));
+  const [completedSongGift, setCompletedSongGift] = useState(() => findCompletedSongGift(savedSession));
   const [isTyping, setIsTyping] = useState(false);
   const [dialogueScore, setDialogueScore] = useState(() => Number.isFinite(savedSession?.dialogueScore) ? clampScore(savedSession.dialogueScore) : INITIAL_COMFORT);
   const itemBonus = wallet.scenarioBoosts[scenarioId] || 0;
@@ -98,11 +100,11 @@ export default function ChatPageClient({ initialScenarioId }) {
   useEffect(() => {
     if (!isClient) return;
     try {
-      localStorage.setItem(chatStorageKey(scenarioId), JSON.stringify({ messages, dialogueScore, turnCount, coachData, inputValue }));
+      localStorage.setItem(chatStorageKey(scenarioId), JSON.stringify({ messages, dialogueScore, turnCount, coachData, inputValue, completedSongGift }));
       localStorage.setItem(chatDirtyKey(scenarioId), "1");
       window.dispatchEvent(new CustomEvent(CLOUD_SESSION_EVENT, { detail: { scenarioId } }));
     } catch { /* Chat continues when session storage is unavailable. */ }
-  }, [isClient, scenarioId, messages, dialogueScore, turnCount, coachData, inputValue]);
+  }, [isClient, scenarioId, messages, dialogueScore, turnCount, coachData, inputValue, completedSongGift]);
 
   const handleSelectScenario = (newId) => {
     generation.current += 1;
@@ -282,6 +284,7 @@ export default function ChatPageClient({ initialScenarioId }) {
         ? { id: `victim-${crypto.randomUUID()}`, sender: "victim", text: song.reply, time: currentTime(), unread: false }
         : null;
       setMessages((current) => [...current, giftMessage, ...(victimMessage ? [victimMessage] : [])].slice(-80));
+      if (victimMessage) setCompletedSongGift({ title: song.title, accepted: true, completedAt: new Date().toISOString() });
       setIsSongGiftModalOpen(false);
       if (victimMessage) {
         endingTimer.current = setTimeout(() => router.push(`/ending?scenario=${encodeURIComponent(scenarioId)}`), 4000);

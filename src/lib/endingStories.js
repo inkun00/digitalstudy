@@ -72,6 +72,9 @@ export const ENDING_STORIES = {
 };
 
 export function findCompletedSongGift(chat) {
+  if (chat?.completedSongGift?.accepted === true && typeof chat.completedSongGift.title === "string" && chat.completedSongGift.title.trim()) {
+    return chat.completedSongGift;
+  }
   if (!Array.isArray(chat?.messages)) return null;
   for (let index = chat.messages.length - 2; index >= 0; index -= 1) {
     const message = chat.messages[index];

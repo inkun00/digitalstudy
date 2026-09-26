@@ -7,6 +7,7 @@ import { accountErrorMessage, logoutAccount, saveAccountProfile } from "@/lib/ac
 import { normalizeUserProfile } from "@/lib/userProfile";
 import { useHeartWallet } from "@/lib/heartShop";
 import { useCloudSession } from "@/components/CloudSyncProvider";
+import { useCertificateProgress } from "@/lib/useCertificateProgress";
 import AppBottomNav from "@/components/AppBottomNav";
 import ProfileFields from "@/components/ProfileFields";
 
@@ -15,6 +16,7 @@ const EMPTY_PROFILE = { name: "", gender: "", age: "" };
 export default function MyPage() {
   const router = useRouter();
   const wallet = useHeartWallet();
+  const certificate = useCertificateProgress();
   const { user, profile: savedProfile, openingCompleted, status } = useCloudSession();
   const [profile, setProfile] = useState(() => savedProfile || EMPTY_PROFILE);
   const [busy, setBusy] = useState(false);
@@ -68,6 +70,7 @@ export default function MyPage() {
         <div><strong>{savedProfile?.name || "프로필을 완성해 주세요"}</strong><p>{user?.email || "로그인된 계정"}</p></div>
       </section>
       <section className="my-wallet-card"><span>내 하트 포인트</span><strong>♥ {wallet.balance}</strong><small>구매한 배경 {wallet.owned.length}개 · 보유 선물 {Object.values(wallet.bag).reduce((sum, count) => sum + count, 0)}개</small></section>
+      <Link className="my-certificate-card" href="/certificate"><span className="my-certificate-emblem" aria-hidden="true">{certificate.issued ? "✦" : "♡"}</span><span><small>H.E.A.R.T 명예상담사</small><strong>{certificate.issued ? `${certificate.tier.level}단계 · ${certificate.tier.name}` : "첫 수료증에 도전해 보세요"}</strong><em>상담 {certificate.counseled}명 · 안정도 +{certificate.stabilityGain}점 · 노래 {certificate.songs}명</em></span><span className="my-certificate-arrow" aria-hidden="true">→</span></Link>
       <section className="start-form my-profile-card">
         <h2>{savedProfile ? "프로필 수정" : "프로필 완성"}</h2>
         <p className="start-form-intro">피해 친구가 나를 부르고 대화할 때 사용할 정보예요.</p>

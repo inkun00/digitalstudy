@@ -54,6 +54,9 @@ function parseChat(raw) {
       dialogueScore: Number.isFinite(value.dialogueScore) ? value.dialogueScore : 25,
       turnCount: Number.isSafeInteger(value.turnCount) && value.turnCount >= 0 ? value.turnCount : 0,
       coachData: value.coachData && typeof value.coachData === "object" ? value.coachData : null,
+      completedSongGift: value.completedSongGift?.accepted === true && typeof value.completedSongGift.title === "string" && value.completedSongGift.title.trim()
+        ? { title: value.completedSongGift.title.slice(0, 120), accepted: true, completedAt: typeof value.completedSongGift.completedAt === "string" ? value.completedSongGift.completedAt : null }
+        : null,
     };
   } catch { return null; }
 }

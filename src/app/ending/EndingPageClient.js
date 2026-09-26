@@ -8,10 +8,12 @@ import { useCloudSession } from "@/components/CloudSyncProvider";
 import { chatStorageKey } from "@/lib/cloudState";
 import { ENDING_STORIES, findCompletedSongGift } from "@/lib/endingStories";
 import { SCENARIOS } from "@/lib/scenarios";
+import { useCertificateProgress } from "@/lib/useCertificateProgress";
 
 export default function EndingPageClient({ scenarioId }) {
   const router = useRouter();
   const { status, user } = useCloudSession();
+  const certificate = useCertificateProgress();
   const savedChat = useSyncExternalStore(() => () => {}, () => localStorage.getItem(chatStorageKey(scenarioId)), () => null);
   let chat;
   try { chat = JSON.parse(savedChat || "null"); }
@@ -46,6 +48,7 @@ export default function EndingPageClient({ scenarioId }) {
         </div>
         <div className="ending-letter"><span aria-hidden="true">💛</span><p>당신의 상담과 노래를 만들기 위해 기울인 노력이 {victim.name}에게 힘이 되었어요. 마음은 천천히 회복되고, 평범한 일상도 한 걸음씩 돌아오고 있습니다.</p></div>
         <div className="ending-song"><span>🎵 마음에 남은 노래</span><strong>{song.title}</strong></div>
+        <Link className="ending-certificate-link" href="/certificate"><span aria-hidden="true">✦</span><span><strong>{certificate.issued ? `${certificate.tier.name} 수료증이 발급됐어요` : "명예상담사 수료증 확인하기"}</strong><small>친구를 도운 기록과 현재 등급 보기</small></span><span aria-hidden="true">→</span></Link>
         <div className="ending-actions"><Link className="ending-primary" href="/chat">다른 친구 만나기</Link><Link className="ending-secondary" href={`/chat?scenario=${encodeURIComponent(scenarioId)}`}>{victim.name}와의 대화 보기</Link></div>
       </div>
     </main>
