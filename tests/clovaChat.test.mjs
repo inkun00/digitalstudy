@@ -55,6 +55,43 @@ test("피해자의 절차 안내형 답장을 다시 생성하고 짧은 감정 
   assert.equal(isOutOfCharacterReply("단톡방을 캡처해 뒀는데 아직 무서워."), false);
 });
 
+test("피해자가 해결 계획을 대신 제안하면 다시 생성하고 도움 요청은 허용한다", async () => {
+  const proposedPlan = "맞아, 나도 선생님께 알리고 싶어. 우리가 나서서 올린 사람이 누군지 찾을 방법이 없을까? 우리 같이 얘기해서 조금씩 용기를 내보자! 어른들께 도와달라고 하자. 할 수 있지?";
+  const victimRequest = "올린 사람이 누군지 몰라서 무서워. 선생님께 말하는 것도 걱정돼. 내 얘기를 조금 더 들어줄 수 있어?";
+  assert.equal(isOutOfCharacterReply(proposedPlan), true);
+  assert.equal(isOutOfCharacterReply("우리 선생님께 같이 말해보자."), true);
+  assert.equal(isOutOfCharacterReply("선생님께 말씀드리자."), true);
+  assert.equal(isOutOfCharacterReply("선생님께 말해보고 싶어. 그런데 아직 무서워."), false);
+  assert.equal(isOutOfCharacterReply("우리 반 애들이 내일 또 괴롭히면 어떻게 해야 할까?"), false);
+  assert.equal(isOutOfCharacterReply(victimRequest), false);
+
+  let calls = 0;
+  let retryPrompt;
+  const reply = await generateClovaReply({
+    scenario, counselor, messages: dialogue, apiKey: "test-key",
+    fetchImpl: async (_url, init) => {
+      calls += 1;
+      if (calls === 2) retryPrompt = JSON.parse(init.body).messages[0].content;
+      return { ok: true, json: async () => ({ result: { message: { content: calls === 1 ? proposedPlan : victimRequest } } }) };
+    },
+  });
+  assert.equal(calls, 2);
+  assert.equal(reply, victimRequest);
+  assert.match(retryPrompt, /해결책이나 '우리 ~하자' 같은 제안을 하지 말고/);
+});
+
+test("이전 대화에 남은 피해자의 해결 지시는 다음 생성 요청에서 제외한다", () => {
+  const prompt = buildClovaMessages({ scenario, counselor, messages: [
+    { sender: "victim", text: "학교 가기가 무서워." },
+    { sender: "victim", text: "우리 선생님께 같이 말해보자." },
+    { sender: "user", text: "지금 많이 걱정되는구나." },
+  ] });
+  assert.deepEqual(prompt.slice(1), [
+    { role: "assistant", content: "학교 가기가 무서워." },
+    { role: "user", content: "지금 많이 걱정되는구나." },
+  ]);
+});
+
 test("다시 생성해도 기관 안내문이면 피해자 채팅에 표시하지 않는다", async () => {
   let calls = 0;
   await assert.rejects(generateClovaReply({
