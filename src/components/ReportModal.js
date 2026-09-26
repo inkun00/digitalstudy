@@ -177,7 +177,7 @@ export default function ReportModal({
                   </button>}
                 </div>
 
-                <p className="lyrics-description">{currentScenario.name}와 나눈 대화를 바탕으로 4줄, 총 16마디의 예시 가사를 만들어요. 생성할 때마다 하트 {LYRICS_GENERATION_COST}포인트가 소모돼요.</p>
+                <p className="lyrics-description">{currentScenario.name}와 나눈 대화를 바탕으로 한 줄에 4마디씩, 총 4줄의 예시 가사를 만들어요. 한 마디는 공백을 뺀 2~6글자예요. 생성할 때마다 하트 {LYRICS_GENERATION_COST}포인트가 소모돼요.</p>
                 <p className="lyrics-balance">보유 하트 ♥ {wallet.balance}P</p>
                 <button type="button" className="lyrics-generate-btn" onClick={handleGenerateLyrics} disabled={isLoadingLyrics || wallet.balance < LYRICS_GENERATION_COST}>
                   {isLoadingLyrics ? "예시 가사 만드는 중..." : lyricsLines ? `♥ ${LYRICS_GENERATION_COST} · 예시 가사 다시 생성` : `♥ ${LYRICS_GENERATION_COST} · 예시 가사 생성`}
