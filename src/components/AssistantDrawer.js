@@ -9,6 +9,10 @@ export default function AssistantDrawer({
   onClose,
   coachData,
   isLoadingCoach,
+  coaching,
+  isLoadingCoaching,
+  coachingError,
+  onRetryCoaching,
   onSelectSuggestedReply,
   currentScenario,
 }) {
@@ -78,12 +82,11 @@ export default function AssistantDrawer({
               <span>상담자 코칭 팁 (어떻게 말할까?)</span>
             </div>
             <div className="card-body-text" style={{ lineHeight: "1.55" }}>
-              {isLoadingCoach ? (
+              {isLoadingCoach || isLoadingCoaching ? (
                 <p style={{ color: "#888" }}>상담 조언을 불러오는 중입니다...</p>
-              ) : (
-                coachData?.advice_tip ||
-                "친구에게 '네 탓이 아니야'라고 안심시켜 준 뒤, 단톡방 화면을 캡처하고 선생님께 알리도록 안내해 주세요."
-              )}
+              ) : coachingError ? (
+                <span role="alert">{coachingError} <button type="button" onClick={onRetryCoaching}>다시 시도</button></span>
+              ) : coaching?.advice_tip || "지금 상황에 맞는 조언을 준비하고 있어요."}
             </div>
           </div>
 
@@ -94,12 +97,14 @@ export default function AssistantDrawer({
               <span>추천 답변 3선 (클릭 시 입력창에 쏙!)</span>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              {isLoadingCoach ? (
+              {isLoadingCoach || isLoadingCoaching ? (
                 <p style={{ color: "#888", fontSize: "12px", padding: "10px" }}>
                   상황에 알맞은 답변을 추천하고 있어요...
                 </p>
+              ) : coachingError ? (
+                <p role="alert" style={{ color: "#A22", fontSize: "12px", padding: "10px" }}>조언을 불러오지 못했어요. 위의 다시 시도를 눌러 주세요.</p>
               ) : (
-                coachData?.suggested_replies?.map((reply, idx) => (
+                coaching?.suggested_replies?.map((reply, idx) => (
                   <button
                     key={idx}
                     type="button"

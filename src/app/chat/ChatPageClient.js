@@ -11,7 +11,7 @@ import ReportModal from "@/components/ReportModal";
 import ItemBagModal from "@/components/ItemBagModal";
 import SongGiftModal from "@/components/SongGiftModal";
 import { SCENARIOS } from "@/lib/scenarios";
-import { INITIAL_COMFORT, clampScore, getSuggestedReplies } from "@/lib/evaluation";
+import { INITIAL_COMFORT, clampScore } from "@/lib/evaluation";
 import { getStoredProfile } from "@/lib/userProfile";
 import { SHOP_ITEMS, applyFantasyItem, awardHeartPoints, pointsForScoreIncrease, useHeartWallet } from "@/lib/heartShop";
 import { CLOUD_SESSION_EVENT, chatDirtyKey, chatStorageKey } from "@/lib/cloudState";
@@ -50,11 +50,9 @@ function initialMessages(scenario) {
   return scenario.initialMessages.map((text, index) => ({ id: `init-${index}-${Date.now()}`, sender: "victim", text, time: currentTime(), unread: false }));
 }
 
-function initialCoach(scenario) {
+function initialCoach() {
   return {
     current_emotion: "불안과 두려움을 느끼는 상태",
-    advice_tip: `${scenario.name}의 피해 상황을 듣고 감정을 먼저 인정해 주세요.`,
-    suggested_replies: getSuggestedReplies(scenario),
   };
 }
 
@@ -85,7 +83,11 @@ export default function ChatPageClient({ initialScenarioId }) {
   const itemBonus = wallet.scenarioBoosts[scenarioId] || 0;
   const comfortScore = clampScore(dialogueScore + itemBonus);
   const [turnCount, setTurnCount] = useState(() => Number.isSafeInteger(savedSession?.turnCount) && savedSession.turnCount >= 0 ? savedSession.turnCount : 0);
-  const [coachData, setCoachData] = useState(() => savedSession?.coachData && typeof savedSession.coachData === "object" ? savedSession.coachData : initialCoach(initialScenario));
+  const [coachData, setCoachData] = useState(() => savedSession?.coachData && typeof savedSession.coachData === "object" ? savedSession.coachData : initialCoach());
+  const [coaching, setCoaching] = useState(() => savedSession?.coaching && typeof savedSession.coaching === "object" ? savedSession.coaching : null);
+  const [isLoadingCoaching, setIsLoadingCoaching] = useState(false);
+  const [coachingError, setCoachingError] = useState("");
+  const [coachingRetry, setCoachingRetry] = useState(0);
   const [reportData, setReportData] = useState(null);
   const [isLoadingReport, setIsLoadingReport] = useState(false);
   const [reportError, setReportError] = useState("");
@@ -105,17 +107,43 @@ export default function ChatPageClient({ initialScenarioId }) {
   const generation = useRef(0);
   const replyInFlight = useRef(false);
   const endingTimer = useRef(null);
+  const latestVictimMessage = [...messages].reverse().find((message) => message.sender === "victim");
+  const currentCoaching = coaching?.forMessageId === latestVictimMessage?.id ? coaching : null;
 
   useEffect(() => () => clearTimeout(endingTimer.current), []);
 
   useEffect(() => {
+    if (!isClient || !isDrawerOpen || isTyping || !latestVictimMessage || currentCoaching) return;
+    const controller = new AbortController();
+    const loadCoaching = async () => {
+      setIsLoadingCoaching(true);
+      setCoachingError("");
+      try {
+        const response = await fetch("/api/coach-suggestions", {
+          method: "POST", headers: { "Content-Type": "application/json" }, signal: controller.signal,
+          body: JSON.stringify({ scenarioId, messages, userProfile: profile || getStoredProfile(), previousReplies: coaching?.suggested_replies || [] }),
+        });
+        const result = await response.json().catch(() => null);
+        if (!response.ok) throw new Error(result?.error || "상담 조언을 불러오지 못했어요.");
+        if (!controller.signal.aborted) setCoaching({ ...result, forMessageId: latestVictimMessage.id });
+      } catch (error) {
+        if (!controller.signal.aborted) setCoachingError(error.message);
+      } finally {
+        if (!controller.signal.aborted) setIsLoadingCoaching(false);
+      }
+    };
+    void loadCoaching();
+    return () => controller.abort();
+  }, [isClient, isDrawerOpen, isTyping, latestVictimMessage, currentCoaching, scenarioId, messages, profile, coaching, coachingRetry]);
+
+  useEffect(() => {
     if (!isClient) return;
     try {
-      localStorage.setItem(chatStorageKey(scenarioId), JSON.stringify({ messages, dialogueScore, turnCount, coachData, inputValue, completedSongGift, songFingerprints, songFileFingerprints }));
+      localStorage.setItem(chatStorageKey(scenarioId), JSON.stringify({ messages, dialogueScore, turnCount, coachData, coaching, inputValue, completedSongGift, songFingerprints, songFileFingerprints }));
       localStorage.setItem(chatDirtyKey(scenarioId), "1");
       window.dispatchEvent(new CustomEvent(CLOUD_SESSION_EVENT, { detail: { scenarioId } }));
     } catch { /* Chat continues when session storage is unavailable. */ }
-  }, [isClient, scenarioId, messages, dialogueScore, turnCount, coachData, inputValue, completedSongGift, songFingerprints, songFileFingerprints]);
+  }, [isClient, scenarioId, messages, dialogueScore, turnCount, coachData, coaching, inputValue, completedSongGift, songFingerprints, songFileFingerprints]);
 
   const handleSelectScenario = (newId) => {
     generation.current += 1;
@@ -355,7 +383,7 @@ export default function ChatPageClient({ initialScenarioId }) {
         {isSongFormatPopupOpen && <div className="modal-overlay" role="presentation"><div className="modal-box song-format-popup" role="alertdialog" aria-modal="true" aria-labelledby="song-format-title" aria-describedby="song-format-description"><div className="song-format-popup-icon" aria-hidden="true">📄</div><h3 id="song-format-title">양식에 맞지 않는 파일이에요</h3><p id="song-format-description">{SONG_FORMAT_ERROR}</p><button type="button" onClick={() => setIsSongFormatPopupOpen(false)}>확인</button></div></div>}
         {isSongDuplicatePopupOpen && <div className="modal-overlay" role="presentation"><div className="modal-box song-format-popup" role="alertdialog" aria-modal="true" aria-labelledby="song-duplicate-title" aria-describedby="song-duplicate-description"><div className="song-format-popup-icon" aria-hidden="true">🎵</div><h3 id="song-duplicate-title">이미 선물한 노래예요</h3><p id="song-duplicate-description">{SONG_DUPLICATE_ERROR}</p><button type="button" onClick={() => setIsSongDuplicatePopupOpen(false)}>확인</button></div></div>}
       </section>
-      <AssistantDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} coachData={coachData} isLoadingCoach={isTyping} onSelectSuggestedReply={setInputValue} currentScenario={currentScenario} />
+      <AssistantDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)} coachData={coachData} isLoadingCoach={isTyping} coaching={currentCoaching} isLoadingCoaching={isLoadingCoaching} coachingError={coachingError} onRetryCoaching={() => setCoachingRetry((value) => value + 1)} onSelectSuggestedReply={setInputValue} currentScenario={currentScenario} />
     </main>
   );
 }

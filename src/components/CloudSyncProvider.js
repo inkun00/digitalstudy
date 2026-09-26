@@ -55,6 +55,11 @@ function parseChat(raw) {
       dialogueScore: Number.isFinite(value.dialogueScore) ? value.dialogueScore : 25,
       turnCount: Number.isSafeInteger(value.turnCount) && value.turnCount >= 0 ? value.turnCount : 0,
       coachData: value.coachData && typeof value.coachData === "object" ? value.coachData : null,
+      coaching: typeof value.coaching?.forMessageId === "string" && typeof value.coaching.advice_tip === "string" &&
+        Array.isArray(value.coaching.suggested_replies) && value.coaching.suggested_replies.length === 3 &&
+        value.coaching.suggested_replies.every((reply) => typeof reply === "string" && reply.length <= 180)
+        ? { forMessageId: value.coaching.forMessageId.slice(0, 100), advice_tip: value.coaching.advice_tip.slice(0, 180), suggested_replies: value.coaching.suggested_replies }
+        : null,
       completedSongGift: value.completedSongGift?.accepted === true && typeof value.completedSongGift.title === "string" && value.completedSongGift.title.trim()
         ? { title: value.completedSongGift.title.slice(0, 120), accepted: true, completedAt: typeof value.completedSongGift.completedAt === "string" ? value.completedSongGift.completedAt : null }
         : null,

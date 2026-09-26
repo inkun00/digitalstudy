@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { SCENARIOS } from "@/lib/scenarios";
-import { INITIAL_COMFORT, clampScore, getSuggestedReplies } from "@/lib/evaluation";
+import { INITIAL_COMFORT, clampScore } from "@/lib/evaluation";
 import { ClovaChatError } from "@/lib/clovaChat";
 import { evaluateReplyWithClova } from "@/lib/clovaEvaluation";
 
@@ -26,8 +26,6 @@ export async function POST(req) {
       evidence: lastReply.slice(0, 80),
       comfort_score: clampScore(baseline + assessment.turn_delta),
       current_emotion: assessment.turn_delta < 0 ? "상처와 불안이 커진 상태" : assessment.turn_delta > 0 ? "조금씩 안정을 찾는 중" : "여전히 불안한 상태",
-      advice_tip: lastReply ? assessment.feedback : `${scenario.name}의 피해 상황을 듣고 감정을 먼저 인정해 주세요.`,
-      suggested_replies: getSuggestedReplies(scenario),
     });
   } catch (error) {
     if (error instanceof ClovaChatError) return NextResponse.json({ error: error.message }, { status: error.status });

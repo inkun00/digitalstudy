@@ -29,14 +29,6 @@ export function assessReply(text, scenario) {
   return { turn_delta: delta, evidence: reply.slice(0, 80), feedback };
 }
 
-export function getSuggestedReplies(scenario) {
-  return [
-    `${scenario.name}야, ${scenario.keyIssues[0]} 때문에 많이 무섭고 속상했겠다. 네 잘못이 아니야.`,
-    "그 일이 언제부터 있었어? 지금은 안전한 곳에 있어? 더 이야기해 줄래?",
-    "우리 관련 대화나 게시물을 캡처해 두고, 믿을 수 있는 어른이나 선생님께 함께 알려보자.",
-  ];
-}
-
 export function evaluateConversation(messages, scenario) {
   const assessments = messages.filter((message) => message.sender === "user").map((message) => message.evaluation || assessReply(message.text, scenario));
   return {
