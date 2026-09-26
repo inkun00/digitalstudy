@@ -393,7 +393,6 @@ body {
 .song-gift-file-label { font-size: 12px; font-weight: 800; }
 .song-gift-body input[type="file"] { width: 100%; padding: 10px; border: 1px dashed #d8bc57; border-radius: 8px; background: #fffdf3; font-size: 11px; }
 .song-gift-body .song-gift-selected { color: #694f0b; font-weight: 700; overflow-wrap: anywhere; }
-.song-gift-body .song-gift-hint { color: #777; font-size: 10px; }
 .song-gift-body .song-gift-error { padding: 8px 10px; border-radius: 6px; background: #fff1f1; color: #b53636; }
 .song-gift-submit { padding: 11px; border: 0; border-radius: 8px; background: #fee500; color: #302610; font: inherit; font-size: 13px; font-weight: 800; cursor: pointer; }
 .song-gift-submit:disabled { background: #ececec; color: #888; cursor: default; }
