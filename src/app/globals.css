@@ -390,6 +390,8 @@ body {
 .song-gift-modal { max-width: 460px; }
 .song-gift-body { display: flex; flex-direction: column; gap: 10px; padding: 18px; }
 .song-gift-body > p { margin: 0; color: #514b40; font-size: 12px; line-height: 1.5; }
+.song-compose-link { display: block; padding: 11px; border: 1px solid #d5bd44; border-radius: 8px; background: #fff8d9; color: #493704; font-size: 13px; font-weight: 800; text-align: center; text-decoration: none; }
+.song-compose-link:hover, .song-compose-link:focus-visible { background: #fff0a8; }
 .song-gift-file-label { font-size: 12px; font-weight: 800; }
 .song-gift-body input[type="file"] { width: 100%; padding: 10px; border: 1px dashed #d8bc57; border-radius: 8px; background: #fffdf3; font-size: 11px; }
 .song-gift-body .song-gift-selected { color: #694f0b; font-weight: 700; overflow-wrap: anywhere; }

@@ -15,6 +15,7 @@ export default function SongGiftModal({ isOpen, onClose, onSend, isSending, erro
         </div>
         <div className="song-gift-body">
           <p>{currentScenario.name}에게 희망을 주는 노래를 만들어서 선물해 주세요.</p>
+          <a className="song-compose-link" href="https://maeum-melody.vercel.app/" target="_blank" rel="noopener noreferrer" aria-label="노래 작곡하기 (새 탭에서 열기)">🎼 노래 작곡하기</a>
           <label className="song-gift-file-label" htmlFor="song-gift-pdf">노래 PDF 선택</label>
           <input id="song-gift-pdf" type="file" accept=".pdf,application/pdf" disabled={isSending} onChange={(event) => setFile(event.target.files?.[0] || null)} />
           {file && <p className="song-gift-selected">📄 {file.name} · {Math.ceil(file.size / 1024)}KB</p>}
