@@ -10,6 +10,7 @@ import ScenarioModal from "@/components/ScenarioModal";
 import ReportModal from "@/components/ReportModal";
 import ItemBagModal from "@/components/ItemBagModal";
 import SongGiftModal from "@/components/SongGiftModal";
+import VictimOpening from "@/components/VictimOpening";
 import { SCENARIOS } from "@/lib/scenarios";
 import { INITIAL_COMFORT, clampScore } from "@/lib/evaluation";
 import { getStoredProfile } from "@/lib/userProfile";
@@ -21,6 +22,7 @@ import { canReceiveSongGift, DuplicateSongError, SONG_DUPLICATE_ERROR, SONG_FORM
 import { findCompletedSongGift } from "@/lib/endingStories";
 import { collectOtherVictimPdfFingerprints, collectOtherVictimSongFingerprints, getPdfContentFingerprint, SONG_FINGERPRINT_PATTERN } from "@/lib/songFingerprint";
 import { useCloudSession } from "@/components/CloudSyncProvider";
+import { hasFinishedVictimOpening } from "@/lib/victimOpenings";
 
 const subscribeToMount = () => () => {};
 const getClientSnapshot = () => true;
@@ -72,6 +74,7 @@ export default function ChatPageClient({ initialScenarioId }) {
   const currentScenario = initialScenario;
   const isClient = useSyncExternalStore(subscribeToMount, getClientSnapshot, getServerSnapshot);
   const [savedSession] = useState(() => readSavedChat(scenarioId));
+  const [showVictimOpening, setShowVictimOpening] = useState(() => !hasFinishedVictimOpening(savedSession));
   const [messages, setMessages] = useState(() => savedSession?.messages || initialMessages(initialScenario));
   const [completedSongGift, setCompletedSongGift] = useState(() => findCompletedSongGift(savedSession));
   const [songFingerprints, setSongFingerprints] = useState(() => Array.isArray(savedSession?.songFingerprints)
@@ -137,11 +140,11 @@ export default function ChatPageClient({ initialScenarioId }) {
   useEffect(() => {
     if (!isClient) return;
     try {
-      localStorage.setItem(chatStorageKey(scenarioId), JSON.stringify({ messages, dialogueScore, turnCount, coachData, coaching, inputValue, completedSongGift, songFingerprints, songFileFingerprints }));
+      localStorage.setItem(chatStorageKey(scenarioId), JSON.stringify({ messages, dialogueScore, turnCount, coachData, coaching, inputValue, completedSongGift, songFingerprints, songFileFingerprints, victimOpeningCompleted: !showVictimOpening }));
       localStorage.setItem(chatDirtyKey(scenarioId), "1");
       window.dispatchEvent(new CustomEvent(CLOUD_SESSION_EVENT, { detail: { scenarioId } }));
     } catch { /* Chat continues when session storage is unavailable. */ }
-  }, [isClient, scenarioId, messages, dialogueScore, turnCount, coachData, coaching, inputValue, completedSongGift, songFingerprints, songFileFingerprints]);
+  }, [isClient, scenarioId, messages, dialogueScore, turnCount, coachData, coaching, inputValue, completedSongGift, songFingerprints, songFileFingerprints, showVictimOpening]);
 
   const handleSelectScenario = (newId) => {
     generation.current += 1;
@@ -376,6 +379,10 @@ export default function ChatPageClient({ initialScenarioId }) {
   const pendingGiftReply = messages.at(-1)?.sender === "system" && messages.at(-1)?.giftItemId;
 
   if (!isClient) return null;
+
+  if (showVictimOpening) return (
+    <VictimOpening scenario={currentScenario} onComplete={() => setShowVictimOpening(false)} onExit={() => router.push("/chat")} />
+  );
 
   return (
     <main className={`chat-workspace ${isDrawerOpen ? "assistant-visible" : ""}`}>

@@ -52,6 +52,7 @@ function parseChat(raw) {
       value.messages.some((message) => !["user", "victim", "system"].includes(message.sender) || typeof message.text !== "string" || message.text.length > 2000)) return null;
     return {
       messages: value.messages,
+      victimOpeningCompleted: value.victimOpeningCompleted === true,
       dialogueScore: Number.isFinite(value.dialogueScore) ? value.dialogueScore : 25,
       turnCount: Number.isSafeInteger(value.turnCount) && value.turnCount >= 0 ? value.turnCount : 0,
       coachData: value.coachData && typeof value.coachData === "object" ? value.coachData : null,
