@@ -9,6 +9,7 @@ import { AUTH_CHANGED_EVENT, ensureAnonymousUser, firebaseConfigured, getFirebas
 import { ACTIVE_UID_KEY, CLOUD_SESSION_EVENT, WALLET_DIRTY_KEY, WALLET_STORAGE_KEY, accountCacheBoundary, chatDirtyKey, chatStorageKey, chooseStoredValue } from "@/lib/cloudState";
 import { PROFILE_CHANGE_EVENT, clearStoredProfile, getStoredProfile, normalizeUserProfile, storeProfile } from "@/lib/userProfile";
 import { SONG_FINGERPRINT_PATTERN } from "@/lib/songFingerprint";
+import { migrateLegacyInitialMessages } from "@/lib/scenarioMessageMigration";
 
 const SESSION_UID_KEY = "heart_cloud_tab_uid";
 const CloudSessionContext = createContext({ status: "loading", user: null, profile: null, openingCompleted: false, finishOpening: async () => {} });
@@ -199,8 +200,12 @@ export default function CloudSyncProvider({ children }) {
           const localChat = readStored(key) || readLegacyChat(key);
           const remoteChat = cloudChats.has(scenario.id) ? JSON.stringify(cloudChats.get(scenario.id)) : null;
           const choice = chooseStoredValue(localChat, remoteChat, Boolean(readStored(chatDirtyKey(scenario.id))));
-          if (choice.value !== null && parseChat(choice.value)) localStorage.setItem(key, choice.value);
-          if (choice.needsUpload && parseChat(choice.value)) {
+          if (!parseChat(choice.value)) continue;
+          const chosenSession = JSON.parse(choice.value);
+          const migratedMessages = migrateLegacyInitialMessages(scenario, chosenSession.messages);
+          const migrated = migratedMessages !== chosenSession.messages;
+          localStorage.setItem(key, migrated ? JSON.stringify({ ...chosenSession, messages: migratedMessages }) : choice.value);
+          if (choice.needsUpload || migrated) {
             localStorage.setItem(chatDirtyKey(scenario.id), "1");
             uploadChat(scenario.id);
           }

@@ -23,6 +23,7 @@ import { findCompletedSongGift } from "@/lib/endingStories";
 import { collectOtherVictimPdfFingerprints, collectOtherVictimSongFingerprints, getPdfContentFingerprint, SONG_FINGERPRINT_PATTERN } from "@/lib/songFingerprint";
 import { useCloudSession } from "@/components/CloudSyncProvider";
 import { hasFinishedVictimOpening } from "@/lib/victimOpenings";
+import { migrateLegacyInitialMessages } from "@/lib/scenarioMessageMigration";
 
 const subscribeToMount = () => () => {};
 const getClientSnapshot = () => true;
@@ -33,8 +34,10 @@ function readSavedChat(scenarioId) {
   try {
     const key = chatStorageKey(scenarioId);
     const saved = JSON.parse(localStorage.getItem(key) || sessionStorage.getItem(key) || "null");
-    return saved && Array.isArray(saved.messages) && saved.messages.length <= 80 && saved.messages.every((message) =>
-      ["user", "victim", "system"].includes(message.sender) && typeof message.text === "string" && message.text.length <= 2000) ? saved : null;
+    if (!saved || !Array.isArray(saved.messages) || saved.messages.length > 80 || saved.messages.some((message) =>
+      !["user", "victim", "system"].includes(message.sender) || typeof message.text !== "string" || message.text.length > 2000)) return null;
+    const scenario = SCENARIOS.find((item) => item.id === scenarioId);
+    return { ...saved, messages: migrateLegacyInitialMessages(scenario, saved.messages) };
   } catch { return null; }
 }
 
