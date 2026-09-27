@@ -61,11 +61,11 @@ const artDirection = {
     "By the hallway window he uses remaining battery to send a message to a trusted friend asking to talk.",
   ] },
   sua: { outfit: "lilac cardigan over a colorful T-shirt and comfortable trousers", settings: [
-    "At a school library table, looking at a phone showing a harmless funny childhood school-play costume photo, once a happy memory.",
-    "The phone displays the old school-play photo and several coercive unreadable message bubbles with warning symbols; she is anxious.",
-    "At the library table, a handwritten errands list beside the phone symbolizes repeated demands, her hands hesitant.",
-    "Looking from the cheerful old costume photo to her own anxious hands, alone at a library table.",
-    "Using the phone to write a first message to a trusted friend from the library, warm patch of window light.",
+    "Inside a slow school bus, her small lilac-sleeved hands grip the seat edge while a classmate behind discreetly raises a phone camera. Focus on worry and privacy violation.",
+    "Later at home, she sees a threatening chat message with a small blurred candid thumbnail taken on that bus. Focus on privacy violation and fear.",
+    "At her home desk, a homework notebook and phone with repeated coercive, unreadable message bubbles show the demands continuing after she helped once.",
+    "At a quiet bus stop after school, she holds the phone near her chest and anxiously remembers the secretly taken bus picture.",
+    "At her home desk in gentle afternoon light, she types a first message to a trusted friend, hesitating but reaching out for support.",
   ] },
   hyunwoo: { outfit: "teal-green casual sweatshirt and jeans", settings: [
     "At an elementary classroom desk during break, a group of casually dressed pupils laugh together in the background as phone buzzes.",
@@ -81,21 +81,21 @@ const common = `Single full-frame portrait 3:4 illustration for a first-person v
 export function scenePrompt(id, sceneIndex) {
   const direction = artDirection[id];
   const scene = VICTIM_OPENINGS[id].scenes[sceneIndex];
-  return `${common} The viewpoint child's recognizable casual outfit is ${direction.outfit}. Scene ${sceneIndex + 1} of 5 in ${id}'s story. ${direction.settings[sceneIndex]} Visualize this story moment: ${scene.line} Make this a NEW distinct composition from other scenes, not merely a color or camera filter. For references, keep only illustration style and the viewpoint child's same casual sleeves; change the setting/action to the new scene.`;
+  return `${common} The viewpoint child's recognizable casual outfit is ${direction.outfit}. Scene ${sceneIndex + 1} of 5 in ${id}'s story. ${direction.settings[sceneIndex]} ${id === "sua" ? "" : `Visualize this story moment: ${scene.line}`} Make this a NEW distinct composition from other scenes, not merely a color or camera filter. For references, keep only illustration style and the viewpoint child's same casual sleeves; change the setting/action to the new scene.`;
 }
 
 export function choicePrompt(id, sceneIndex, choiceIndex) {
   const direction = artDirection[id];
   const scene = VICTIM_OPENINGS[id].scenes[sceneIndex];
   const choice = scene.choices[choiceIndex];
-  return `${common} The viewpoint child's recognizable casual outfit is ${direction.outfit}. This is a NEW image for the immediate consequence of a player choice in scene ${sceneIndex + 1}, '${scene.title}'. Base setting: ${direction.settings[sceneIndex]} The chosen action is: '${choice.text}'. The resulting inner experience is: '${choice.response}'. Visually depict the chosen physical action and its consequence in the same place, with a noticeably different pose and composition from the base scene and from the other choice. Preserve only the reference's storybook style and casual sleeve color. No text embedded in the artwork.`;
+  return `${common} The viewpoint child's recognizable casual outfit is ${direction.outfit}. This is a NEW image for the immediate consequence of a player choice in scene ${sceneIndex + 1}. Base setting: ${direction.settings[sceneIndex]} The chosen action is: '${choice.text}'. The resulting inner experience is: '${choice.response}'. Visually depict the chosen physical action and its consequence in the same place, with a noticeably different pose and composition from the base scene and from the other choice. Preserve only the reference's storybook style and casual sleeve color. No text embedded in the artwork.`;
 }
 
 export function storyboardPrompt(id, sceneIndex, includeBase) {
   const direction = artDirection[id];
   const scene = VICTIM_OPENINGS[id].scenes[sceneIndex];
   const panels = [
-    ...(includeBase ? [`LEFT PANEL — before choosing: ${direction.settings[sceneIndex]} Story moment: ${scene.line}`] : []),
+    ...(includeBase ? [`LEFT PANEL — before choosing: ${direction.settings[sceneIndex]} ${id === "sua" ? "" : `Story moment: ${scene.line}`}`] : []),
     `${includeBase ? "MIDDLE" : "LEFT"} PANEL — after choosing '${scene.choices[0].text}': visually depict the exact action and result '${scene.choices[0].response}'`,
     `RIGHT PANEL — after choosing '${scene.choices[1].text}': visually depict a clearly different physical action and result '${scene.choices[1].response}'`,
   ];

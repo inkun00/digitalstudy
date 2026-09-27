@@ -12,6 +12,7 @@ export default function VictimOpening({ scenario, onComplete, onExit }) {
   const scene = story.scenes[sceneIndex];
   const chosenChoice = selectedChoiceIndex === null ? null : scene.choices?.[selectedChoiceIndex];
   const isLastScene = sceneIndex === story.scenes.length - 1;
+  const artVersion = scenario.id === "sua" ? "?v=bus-story" : "";
 
   useEffect(() => {
     narrativeRef.current?.focus();
@@ -20,8 +21,8 @@ export default function VictimOpening({ scenario, onComplete, onExit }) {
   useEffect(() => {
     if (!scene.choices) return;
     const image = new window.Image();
-    image.src = `/vn/${scenario.id}/choices-${sceneIndex}.webp`;
-  }, [scene.choices, sceneIndex, scenario.id]);
+    image.src = `/vn/${scenario.id}/choices-${sceneIndex}.webp${artVersion}`;
+  }, [artVersion, scene.choices, sceneIndex, scenario.id]);
 
   const advance = () => {
     if (isLastScene) {
@@ -39,12 +40,12 @@ export default function VictimOpening({ scenario, onComplete, onExit }) {
           <div
             key={`${sceneIndex}-${selectedChoiceIndex}`}
             className={`vn-art-image vn-art-choice vn-art-choice--${selectedChoiceIndex}`}
-            style={{ backgroundImage: `url(/vn/${scenario.id}/choices-${sceneIndex}.webp)` }}
+            style={{ backgroundImage: `url(/vn/${scenario.id}/choices-${sceneIndex}.webp${artVersion})` }}
             role="img"
             aria-label={`${scenario.name}의 눈으로 본 선택 장면: ${chosenChoice.text}`}
           />
         ) : (
-          <Image key={`${scenario.id}-${sceneIndex}`} src={`/vn/${scenario.id}/scene-${sceneIndex}.webp`} alt={`${scenario.name}의 눈으로 본 장면: ${scene.line}`} fill sizes="(max-width: 480px) 100vw, 480px" priority={sceneIndex === 0} className="vn-art-image" />
+          <Image key={`${scenario.id}-${sceneIndex}`} src={`/vn/${scenario.id}/scene-${sceneIndex}.webp${artVersion}`} alt={`${scenario.name}의 눈으로 본 장면: ${scene.line}`} fill sizes="(max-width: 480px) 100vw, 480px" priority={sceneIndex === 0} className="vn-art-image" />
         )}
         <div className="vn-art-shade" aria-hidden="true" />
         <header className="vn-header">
