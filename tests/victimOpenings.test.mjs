@@ -10,10 +10,13 @@ test("every victim has five distinct scene assets and illustrated outcomes for t
   for (const scenario of SCENARIOS) {
     const story = VICTIM_OPENINGS[scenario.id];
     assert.equal(story.scenes.length, 5, scenario.id);
+    assert.equal(story.thoughts.length, story.scenes.length, scenario.id);
     assert.equal(story.scenes.filter((scene) => scene.choices).length, 3, scenario.id);
     assert.ok(story.scenes.some((scene) => scene.line.includes("나는")), scenario.id);
     for (const [index, scene] of story.scenes.entries()) {
-      assert.ok(scene.title && scene.line, scenario.id);
+      assert.ok(scene.line, scenario.id);
+      assert.equal("title" in scene, false, `${scenario.id} scene ${index} has no visible title`);
+      assert.ok(story.thoughts[index]?.trim(), `${scenario.id} thought ${index}`);
       const image = new URL(`../public/vn/${scenario.id}/scene-${index}.webp`, import.meta.url);
       assert.ok(existsSync(image) && statSync(image).size > 10_000, `${scenario.id} scene ${index}`);
       if (scene.choices) {
