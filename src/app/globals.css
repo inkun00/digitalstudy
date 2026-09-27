@@ -1469,11 +1469,10 @@ body {
 /* 피해자 채팅방 첫 방문: 1인칭 비주얼노블 */
 .vn-page { width: 100%; max-width: 480px; height: 100dvh; max-height: 940px; display: flex; flex-direction: column; overflow: hidden; background: #17202b; color: #fff; box-shadow: 0 12px 40px #0003; }
 .vn-art { position: relative; flex: 1 1 57%; min-height: 0; overflow: hidden; background: #556070; }
-.vn-art-image { object-fit: cover; object-position: center 34%; animation: vn-arrive .7s ease both; }
-.vn-art-image--1 { object-position: center 55%; filter: saturate(.85); }
-.vn-art-image--2 { object-position: center 65%; filter: saturate(.7) brightness(.8); }
-.vn-art-image--3 { object-position: center 42%; filter: saturate(.78) brightness(.88); }
-.vn-art-image--4 { object-position: center 35%; filter: saturate(.96) brightness(1.05); }
+.vn-art-image { object-fit: cover; object-position: center 45%; animation: vn-arrive .45s ease both; }
+.vn-art-choice { position: absolute; inset: 0; background-repeat: no-repeat; background-size: 200% auto; }
+.vn-art-choice--0 { background-position: left center; }
+.vn-art-choice--1 { background-position: right center; }
 .vn-art-shade { position: absolute; inset: 0; background: linear-gradient(180deg, #0d162899 0%, transparent 30%, transparent 72%, #17202b 100%); pointer-events: none; }
 .vn-header { position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; gap: 10px; padding: max(18px, env(safe-area-inset-top)) 20px 8px; text-shadow: 0 1px 5px #0009; }
 .vn-exit { width: 34px; height: 34px; flex: none; border: 1px solid #ffffff80; border-radius: 50%; background: #141b2c80; color: #fff; font: inherit; font-size: 20px; cursor: pointer; }

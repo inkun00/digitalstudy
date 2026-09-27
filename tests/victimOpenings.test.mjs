@@ -1,10 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { existsSync } from "node:fs";
+import { existsSync, statSync } from "node:fs";
 import { SCENARIOS } from "../src/lib/scenarios.js";
 import { VICTIM_OPENINGS, hasFinishedVictimOpening } from "../src/lib/victimOpenings.js";
 
-test("every victim has a distinct first-person story with three interactive moments and a local visual", () => {
+test("every victim has five distinct scene assets and illustrated outcomes for three choices", () => {
   assert.deepEqual(Object.keys(VICTIM_OPENINGS).sort(), SCENARIOS.map((scenario) => scenario.id).sort());
   const endings = new Set();
   for (const scenario of SCENARIOS) {
@@ -12,12 +12,15 @@ test("every victim has a distinct first-person story with three interactive mome
     assert.equal(story.scenes.length, 5, scenario.id);
     assert.equal(story.scenes.filter((scene) => scene.choices).length, 3, scenario.id);
     assert.ok(story.scenes.some((scene) => scene.line.includes("나는")), scenario.id);
-    assert.ok(existsSync(new URL(`../public/vn/${scenario.id}.webp`, import.meta.url)), scenario.id);
-    for (const scene of story.scenes) {
+    for (const [index, scene] of story.scenes.entries()) {
       assert.ok(scene.title && scene.line, scenario.id);
+      const image = new URL(`../public/vn/${scenario.id}/scene-${index}.webp`, import.meta.url);
+      assert.ok(existsSync(image) && statSync(image).size > 10_000, `${scenario.id} scene ${index}`);
       if (scene.choices) {
         assert.equal(scene.choices.length, 2, scenario.id);
         for (const choice of scene.choices) assert.ok(choice.text && choice.response, scenario.id);
+        const outcomes = new URL(`../public/vn/${scenario.id}/choices-${index}.webp`, import.meta.url);
+        assert.ok(existsSync(outcomes) && statSync(outcomes).size > 10_000, `${scenario.id} choices ${index}`);
       }
     }
     endings.add(story.scenes.at(-1).line);
