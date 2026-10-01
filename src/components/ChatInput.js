@@ -13,6 +13,7 @@ export default function ChatInput({
   onOpenDrawer,
   onOpenGift,
   onOpenSongGift,
+  onOpenConversationExport,
 }) {
   const [isComposing, setIsComposing] = useState(false);
   const [isQuickMenuOpen, setIsQuickMenuOpen] = useState(false);
@@ -54,6 +55,7 @@ export default function ChatInput({
         <button type="button" onClick={() => { setIsQuickMenuOpen(false); onOpenGift(); }}>🎁 선물하기</button>
         <button type="button" onClick={() => { setIsQuickMenuOpen(false); onOpenSongGift(); }}>🎵 노래 선물하기</button>
         <button type="button" onClick={() => { setIsQuickMenuOpen(false); onOpenDrawer(); }}>상담 도우미</button>
+        <button type="button" onClick={() => { setIsQuickMenuOpen(false); onOpenConversationExport(); }}>대화 내용 복사하기</button>
         {canGenerateReport && <button type="button" onClick={() => { setIsQuickMenuOpen(false); onOpenReportModal(); }}>대화 평가 리포트</button>}
       </div>}
       <div className="input-row">

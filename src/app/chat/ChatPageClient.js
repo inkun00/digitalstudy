@@ -11,6 +11,7 @@ import ReportModal from "@/components/ReportModal";
 import ItemBagModal from "@/components/ItemBagModal";
 import SongGiftModal from "@/components/SongGiftModal";
 import VictimOpening from "@/components/VictimOpening";
+import ConversationExportModal from "@/components/ConversationExportModal";
 import { SCENARIOS } from "@/lib/scenarios";
 import { INITIAL_COMFORT, clampScore } from "@/lib/evaluation";
 import { getStoredProfile } from "@/lib/userProfile";
@@ -102,6 +103,7 @@ export default function ChatPageClient({ initialScenarioId }) {
   const [isScenarioModalOpen, setIsScenarioModalOpen] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [isConversationExportOpen, setIsConversationExportOpen] = useState(false);
   const [isBagModalOpen, setIsBagModalOpen] = useState(false);
   const [bagNotice, setBagNotice] = useState("");
   const [isSongGiftModalOpen, setIsSongGiftModalOpen] = useState(false);
@@ -394,7 +396,8 @@ export default function ChatPageClient({ initialScenarioId }) {
         <ChatList messages={messages} isTyping={isTyping} currentScenario={currentScenario} onDownloadSongPdf={handleDownloadSongPdf} />
         {chatError && <p role="alert" style={{ padding: "6px 14px", color: "#A22", fontSize: "12px" }}>{chatError}</p>}
         {pendingGiftReply && !isTyping && <button type="button" className="gift-reply-retry" onClick={() => requestGiftReply(messages)}>선물에 대한 답장 다시 받기</button>}
-        <ChatInput onSendMessage={handleSendMessage} isTyping={isTyping} turnCount={turnCount} comfortScore={comfortScore} onOpenReportModal={handleOpenReportModal} inputValue={inputValue} setInputValue={setInputValue} onOpenDrawer={() => setIsDrawerOpen(true)} onOpenGift={() => { setBagNotice(""); setIsBagModalOpen(true); }} onOpenSongGift={handleOpenSongGift} />
+        <ChatInput onSendMessage={handleSendMessage} isTyping={isTyping} turnCount={turnCount} comfortScore={comfortScore} onOpenReportModal={handleOpenReportModal} inputValue={inputValue} setInputValue={setInputValue} onOpenDrawer={() => setIsDrawerOpen(true)} onOpenGift={() => { setBagNotice(""); setIsBagModalOpen(true); }} onOpenSongGift={handleOpenSongGift} onOpenConversationExport={() => setIsConversationExportOpen(true)} />
+        {isConversationExportOpen && <ConversationExportModal isOpen onClose={() => setIsConversationExportOpen(false)} messages={messages} currentScenario={currentScenario} />}
         <ScenarioModal isOpen={isScenarioModalOpen} onClose={() => setIsScenarioModalOpen(false)} selectedScenarioId={scenarioId} onSelectScenario={handleSelectScenario} />
         <ReportModal key={`${scenarioId}:${messages.at(-1)?.id}`} isOpen={isReportModalOpen} onClose={() => setIsReportModalOpen(false)} reportData={reportData} isLoadingReport={isLoadingReport} reportError={reportError} currentScenario={currentScenario} messages={messages} />
         <ItemBagModal isOpen={isBagModalOpen} onClose={() => setIsBagModalOpen(false)} wallet={wallet} currentScenario={currentScenario} currentComfort={comfortScore} onGiftItem={handleGiftItem} onOpenShop={() => router.push("/shop")} notice={bagNotice} />
